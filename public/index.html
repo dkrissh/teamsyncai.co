@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TeamSyncAI — Free Hiring Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+  <style>
+    :root {
+      --ink:         #0d0f12;
+      --ink-soft:    #4a5060;
+      --ink-muted:   #8a91a0;
+      --surface:     #f9f8f6;
+      --white:       #ffffff;
+      --accent:      #1a6b4a;
+      --accent-lt:   #e8f4ef;
+      --accent-glow: rgba(26,107,74,0.12);
+      --border:      #e3e1dc;
+      --radius:      12px;
+      --shadow:      0 2px 16px rgba(13,15,18,0.08);
+      --shadow-lg:   0 8px 40px rgba(13,15,18,0.13);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--surface);
+      color: var(--ink);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 60% -10%, rgba(26,107,74,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at -10% 80%, rgba(26,107,74,0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 0 0;
+      opacity: 0;
+      animation: fadeUp 0.5s ease 0.1s forwards;
+    }
+
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo img { height: 32px; width: auto; }
+    .logo-text { font-family: 'Instrument Serif', serif; font-size: 1.25rem; color: var(--ink); letter-spacing: -0.02em; }
+    .logo-text span { color: var(--accent); }
+
+    .nav-badge {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--accent);
+      background: var(--accent-lt);
+      border: 1px solid rgba(26,107,74,0.2);
+      padding: 4px 12px;
+      border-radius: 100px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+      padding: 72px 0 80px;
+    }
+
+    @media (max-width: 768px) {
+      .hero { grid-template-columns: 1fr; gap: 48px; padding: 48px 0 56px; }
+    }
+
+    .hero-left { opacity: 0; animation: fadeUp 0.6s ease 0.2s forwards; }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .eyebrow::before { content: ''; display: block; width: 20px; height: 1.5px; background: var(--accent); }
+
+    h1 {
+      font-family: 'Instrument Serif', serif;
+      font-size: clamp(2.4rem, 4.5vw, 3.6rem);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      margin-bottom: 20px;
+    }
+
+    h1 em { font-style: italic; color: var(--accent); }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      line-height: 1.65;
+      color: var(--ink-soft);
+      font-weight: 300;
+      max-width: 420px;
+      margin-bottom: 32px;
+    }
+
+    .proof-row { display: flex; flex-wrap: wrap; gap: 20px; }
+    .proof-item { display: flex; align-items: center; gap: 7px; font-size: 0.82rem; color: var(--ink-soft); font-weight: 500; }
+    .proof-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; flex-shrink: 0; }
+
+    .form-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px 36px;
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.35s forwards;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), #2dd4a0);
+    }
+
+    .form-title { font-family: 'Instrument Serif', serif; font-size: 1.4rem; letter-spacing: -0.02em; margin-bottom: 6px; }
+    .form-subtitle { font-size: 0.85rem; color: var(--ink-muted); margin-bottom: 24px; line-height: 1.5; }
+
+    .field-group { margin-bottom: 14px; }
+
+    label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--ink-soft);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+
+    input[type="text"],
+    input[type="email"] {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.93rem;
+      color: var(--ink);
+      background: var(--surface);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+
+    input[type="text"]::placeholder,
+    input[type="email"]::placeholder { color: var(--ink-muted); }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+      background: var(--white);
+    }
+
+    .field-group.has-error input { border-color: #e74c3c; }
+
+    .error-msg { font-size: 0.75rem; color: #c0392b; margin-top: 5px; display: none; }
+    .field-group.has-error .error-msg { display: block; }
+
+    .email-exists-box {
+      display: none;
+      margin-top: 8px;
+      padding: 10px 12px;
+      background: #fefce8;
+      border: 1px solid #fde68a;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      color: #92400e;
+      line-height: 1.55;
+    }
+    .email-exists-box.visible { display: block; }
+    .email-exists-box a { color: var(--accent); font-weight: 600; text-decoration: underline; }
+
+    .legal-section {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .legal-row { display: flex; align-items: flex-start; gap: 9px; }
+
+    .legal-row input[type="checkbox"] {
+      width: 15px; height: 15px; min-width: 15px;
+      margin-top: 2px;
+      accent-color: var(--accent);
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .legal-label {
+      font-size: 0.77rem;
+      color: var(--ink-soft);
+      line-height: 1.5;
+      cursor: pointer;
+      text-transform: none;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+    .legal-label a { color: var(--accent); text-decoration: underline; }
+
+    .turnstile-wrap {
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: #f0f7f4;
+      border: 1px solid rgba(26,107,74,0.15);
+      border-radius: var(--radius);
+    }
+
+    .turnstile-lbl { font-size: 0.75rem; color: var(--ink-soft); margin-bottom: 10px; font-weight: 500; }
+
+    .ts-loading {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      color: var(--ink-muted);
+      padding: 6px 0;
+    }
+
+    .ts-error { font-size: 0.75rem; color: #c0392b; margin-bottom: 6px; display: none; }
+    .retry-btn {
+      background: none; border: none; color: var(--accent);
+      font-size: 0.75rem; cursor: pointer; padding: 0;
+      text-decoration: underline; font-family: 'DM Sans', sans-serif;
+      display: none; margin-top: 4px;
+    }
+
+    .global-error {
+      display: none;
+      padding: 10px 14px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      color: #b91c1c;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+    .global-error.visible { display: block; }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 14px;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s, opacity 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary:hover:not(:disabled) { background: #155c3e; box-shadow: 0 4px 20px rgba(26,107,74,0.3); transform: translateY(-1px); }
+    .btn-primary:active:not(:disabled) { transform: translateY(0); }
+    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-primary.loading { pointer-events: none; }
+    .btn-primary .btn-text { transition: opacity 0.2s; }
+    .btn-primary .btn-loader { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; }
+    .btn-primary.loading .btn-text { opacity: 0; }
+    .btn-primary.loading .btn-loader { display: flex; }
+
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    .success-panel { display: none; text-align: center; padding: 16px 0; }
+    .success-panel.visible { display: block; }
+    .form-fields.hidden { display: none; }
+
+    .success-icon {
+      width: 56px; height: 56px;
+      background: var(--accent-lt);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+    }
+    .success-icon svg { width: 26px; height: 26px; stroke: var(--accent); }
+    .success-panel h3 { font-family: 'Instrument Serif', serif; font-size: 1.5rem; margin-bottom: 8px; }
+    .success-panel p { font-size: 0.88rem; color: var(--ink-soft); margin-bottom: 20px; line-height: 1.6; }
+
+    .btn-secondary {
+      display: inline-block;
+      padding: 11px 28px;
+      background: var(--accent);
+      color: white;
+      border-radius: var(--radius);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .btn-secondary:hover { background: #155c3e; }
+
+    .features { padding: 0 0 80px; opacity: 0; animation: fadeUp 0.6s ease 0.5s forwards; }
+    .features-label { font-size: 0.75rem; font-weight: 600; color: var(--ink-muted); letter-spacing: 0.1em; text-transform: uppercase; text-align: center; margin-bottom: 32px; }
+
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media (max-width: 640px) { .features-grid { grid-template-columns: 1fr; } }
+
+    .feat-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .feat-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+    .feat-icon { font-size: 1.4rem; margin-bottom: 12px; }
+    .feat-title { font-size: 0.88rem; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+    .feat-desc { font-size: 0.8rem; color: var(--ink-soft); line-height: 1.55; }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      opacity: 0;
+      animation: fadeUp 0.4s ease 0.6s forwards;
+    }
+    .footer-left { font-size: 0.78rem; color: var(--ink-muted); }
+    .footer-right { font-size: 0.78rem; color: var(--ink-muted); }
+    .footer-right a { color: var(--accent); text-decoration: none; }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes spin   { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <nav>
+    <a href="https://teamsyncai.com" class="logo">
+      <img src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/teamsyncai_logo.png" alt="TeamSyncAI">
+    </a>
+    <span class="nav-badge">Free — No credit card</span>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-left">
+      <div class="eyebrow">For founders &amp; ops leads</div>
+      <h1>Answer 5 questions.<br>Get a guide built<br>for <em>your exact role.</em></h1>
+      <p class="hero-sub">
+        Custom interview questions, scoring criteria, and 30/60/90 day check-ins — generated for your specific role and team. Free.
+      </p>
+      <div class="proof-row">
+        <div class="proof-item"><span class="proof-dot"></span>~70% less screening time</div>
+        <div class="proof-item"><span class="proof-dot"></span>No HR team needed</div>
+        <div class="proof-item"><span class="proof-dot"></span>Free to start</div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-title">Get your free hiring guide</div>
+      <div class="form-subtitle">Takes 60 seconds. We generate it once you're inside.</div>
+
+      <!-- SUCCESS -->
+      <div class="success-panel" id="success-panel">
+        <div class="success-icon">
+          <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <h3>You're in.</h3>
+        <p>Taking you to TeamSyncAI now — your hiring guide will be ready in under 2 minutes.</p>
+        <a href="#" class="btn-secondary" id="redirect-btn">Open TeamSyncAI →</a>
+      </div>
+
+      <!-- FORM -->
+      <div class="form-fields" id="form-fields">
+        <div class="global-error" id="global-error"></div>
+
+        <form id="lead-form" novalidate>
+          <!-- Honeypot -->
+          <input type="text" name="website" id="hp-website" style="display:none" tabindex="-1" autocomplete="off" />
+
+          <div class="field-group" id="fg-name">
+            <label for="name">Your name</label>
+            <input type="text" id="name" name="name" placeholder="Alex Johnson" autocomplete="name" />
+            <div class="error-msg">Please enter your name</div>
+          </div>
+
+          <div class="field-group" id="fg-email">
+            <label for="email">Work email</label>
+            <input type="email" id="email" name="email" placeholder="alex@company.com" autocomplete="email" />
+            <div class="error-msg" id="email-error-msg">Please enter a valid email</div>
+            <div class="email-exists-box" id="email-exists-box">
+              This email already has an account. &nbsp;<a href="https://app.teamsyncai.com/sign-in">Sign in instead →</a>
+            </div>
+          </div>
+
+          <div class="legal-section">
+            <div class="legal-row">
+              <input type="checkbox" id="chk-terms" name="terms" />
+              <label for="chk-terms" class="legal-label">
+                I agree to the <a href="https://teamsyncai.com/legal/terms" target="_blank">Terms and Conditions</a>
+              </label>
+            </div>
+            <div class="legal-row">
+              <input type="checkbox" id="chk-privacy" name="privacy" />
+              <label for="chk-privacy" class="legal-label">
+                I agree to the <a href="https://teamsyncai.com/legal/privacy" target="_blank">Privacy Policy</a>
+              </label>
+            </div>
+          </div>
+
+          <div class="turnstile-wrap">
+            <div class="turnstile-lbl">Please verify you're human</div>
+            <div id="ts-loading" class="ts-loading">
+              <div style="width:16px;height:16px;border:2px solid rgba(26,107,74,0.2);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0;"></div>
+              Loading verification…
+            </div>
+            <div id="ts-error" class="ts-error"></div>
+            <button type="button" id="ts-retry" class="retry-btn" onclick="retryTurnstile()">↻ Retry verification</button>
+            <div id="turnstile-container" style="display:flex;justify-content:center;min-height:65px;"></div>
+          </div>
+
+          <button type="submit" class="btn-primary" id="submit-btn" disabled>
+            <span class="btn-text">Generate My Free Hiring Guide →</span>
+            <span class="btn-loader"><span class="spinner"></span></span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="features-label">What you get inside</div>
+    <div class="features-grid">
+      <div class="feat-card">
+        <div class="feat-icon">📋</div>
+        <div class="feat-title">AI Hiring Guide</div>
+        <div class="feat-desc">Custom interview questions and scoring criteria generated from 5 questions about your specific role and team.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🎥</div>
+        <div class="feat-title">Async Video Screening</div>
+        <div class="feat-desc">Candidates record on their time. You get a ranked shortlist — skip the 30-min qualifying calls that go nowhere.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📊</div>
+        <div class="feat-title">30/60/90 Day Check-ins</div>
+        <div class="feat-desc">Automated post-hire check-ins tied to your evaluation goals — so you know early if the hire is working.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-left">© 2025 TeamSyncAI · Datastruk Software Solutions · Halifax, NS</div>
+    <div class="footer-right">
+      <a href="https://teamsyncai.com/legal/privacy" target="_blank">Privacy Policy</a> &nbsp;·&nbsp;
+      <a href="https://teamsyncai.com/legal/terms" target="_blank">Terms</a>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  // ── CONFIG — only change these ────────────────────────────────────────
+  const TURNSTILE_SITE_KEY = '0x4AAAAAAA6GdaAB-8aAzYLn'; // REPLACE with your real Turnstile key
+  const AUTH_API           = 'https://auth-api.teamsyncai.com/api/auth';
+  const APP_COMPLETE_URL   = 'https://app.teamsyncai.com/sign-up-complete';
+  // ─────────────────────────────────────────────────────────────────────
+
+  // UTM / ref parsing
+  const params      = new URLSearchParams(window.location.search);
+  const utmSource   = params.get('utm_source')   || '';
+  const utmCampaign = params.get('utm_campaign') || '';
+  const refEmail    = params.get('ref')          || '';
+
+  if (refEmail) {
+    const el = document.getElementById('email');
+    el.value = decodeURIComponent(refEmail);
+    setTimeout(() => {
+      emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(el.value.trim());
+      if (emailIsValid) checkEmailExists(el.value.trim());
+      updateSubmitState();
+    }, 300);
+  }
+
+  // ── Turnstile ─────────────────────────────────────────────────────────
+  let turnstileToken    = '';
+  let turnstileWidgetId = null;
+
+  function initTurnstile() {
+    if (!window.turnstile) { setTimeout(initTurnstile, 150); return; }
+    document.getElementById('ts-loading').style.display = 'none';
+    try {
+      turnstileWidgetId = window.turnstile.render('#turnstile-container', {
+        sitekey: TURNSTILE_SITE_KEY,
+        theme: 'light',
+        callback: (token) => {
+          turnstileToken = token;
+          document.getElementById('ts-error').style.display = 'none';
+          document.getElementById('ts-retry').style.display = 'none';
+          updateSubmitState();
+        },
+        'error-callback':   () => { turnstileToken = ''; showTsError('Verification failed. Please retry.'); updateSubmitState(); },
+        'expired-callback': () => { turnstileToken = ''; updateSubmitState(); },
+        'timeout-callback': () => { turnstileToken = ''; showTsError('Verification timed out. Please retry.'); updateSubmitState(); },
+      });
+    } catch(e) {
+      showTsError('Failed to load verification. Try refreshing the page.');
+    }
+  }
+
+  function showTsError(msg) {
+    const el = document.getElementById('ts-error');
+    el.textContent = msg;
+    el.style.display = 'block';
+    document.getElementById('ts-retry').style.display = 'block';
+  }
+
+  function retryTurnstile() {
+    document.getElementById('ts-error').style.display = 'none';
+    document.getElementById('ts-retry').style.display = 'none';
+    document.getElementById('ts-loading').style.display = 'flex';
+    turnstileToken = '';
+    if (turnstileWidgetId !== null && window.turnstile) {
+      try { window.turnstile.reset(turnstileWidgetId); } catch(e) {}
+    }
+    document.getElementById('ts-loading').style.display = 'none';
+    updateSubmitState();
+  }
+
+  setTimeout(initTurnstile, 300);
+
+  // ── Email existence check ─────────────────────────────────────────────
+  let emailCheckTimer = null;
+  let emailIsValid    = false;
+  let emailExists     = false;
+
+  async function checkEmailExists(email) {
+    try {
+      const res  = await fetch(`${AUTH_API}/check-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email })
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      emailExists = !!data.exists;
+      document.getElementById('email-exists-box').classList.toggle('visible', emailExists);
+      if (emailExists) document.getElementById('fg-email').classList.remove('has-error');
+      updateSubmitState();
+    } catch(e) { /* fail silently */ }
+  }
+
+  document.getElementById('email').addEventListener('input', function() {
+    const email      = this.value.trim();
+    const re         = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    emailIsValid     = re.test(email);
+    emailExists      = false;
+    document.getElementById('email-exists-box').classList.remove('visible');
+    document.getElementById('fg-email').classList.remove('has-error');
+    clearTimeout(emailCheckTimer);
+    if (emailIsValid) emailCheckTimer = setTimeout(() => checkEmailExists(email), 500);
+    updateSubmitState();
+  });
+
+  // ── Submit gate ───────────────────────────────────────────────────────
+  function updateSubmitState() {
+    const name    = document.getElementById('name').value.trim();
+    const terms   = document.getElementById('chk-terms').checked;
+    const privacy = document.getElementById('chk-privacy').checked;
+    document.getElementById('submit-btn').disabled =
+      !(name && emailIsValid && !emailExists && terms && privacy && turnstileToken);
+  }
+
+  ['name'].forEach(id => document.getElementById(id).addEventListener('input', updateSubmitState));
+  ['chk-terms','chk-privacy'].forEach(id => document.getElementById(id).addEventListener('change', updateSubmitState));
+
+  // ── Helpers ───────────────────────────────────────────────────────────
+  function setFieldError(groupId, show) {
+    document.getElementById(groupId).classList.toggle('has-error', show);
+  }
+
+  function showGlobalError(msg) {
+    const el = document.getElementById('global-error');
+    el.textContent = msg;
+    el.classList.add('visible');
+  }
+
+  function hideGlobalError() {
+    document.getElementById('global-error').classList.remove('visible');
+  }
+
+  // ── Submit ────────────────────────────────────────────────────────────
+  document.getElementById('lead-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    hideGlobalError();
+
+    // Honeypot
+    if (document.getElementById('hp-website').value) return;
+
+    const name    = document.getElementById('name').value.trim();
+    const email   = document.getElementById('email').value.trim();
+    const terms   = document.getElementById('chk-terms').checked;
+    const privacy = document.getElementById('chk-privacy').checked;
+
+    let valid = true;
+    if (!name)         { setFieldError('fg-name', true);  valid = false; }
+    if (!emailIsValid) { setFieldError('fg-email', true); valid = false; }
+    if (!terms || !privacy) { showGlobalError('Please agree to the Terms and Privacy Policy to continue.'); valid = false; }
+    if (!turnstileToken)    { showGlobalError('Please complete the human verification above.');              valid = false; }
+    if (!valid) return;
+
+    const btn = document.getElementById('submit-btn');
+    btn.classList.add('loading');
+
+    const payload = {
+      name:  name,
+      email: email,
+      legal: {
+        terms_conditions: terms   ? 'accepted' : '',
+        privacy:          privacy ? 'accepted' : '',
+        name:             name,
+      },
+      legalAcceptance: { name, terms, privacy },
+      plan_intent:     { is_trial: true },
+      turnstileToken:  turnstileToken,
+      source: {
+        utm_source:   utmSource,
+        utm_campaign: utmCampaign,
+        ref_email:    refEmail,
+        page:         window.location.href,
+        submitted_at: new Date().toISOString(),
+      }
+    };
+
+    try {
+      const controller = new AbortController();
+      const timeout    = setTimeout(() => controller.abort(), 10000);
+
+      const res = await fetch(`${AUTH_API}/website-register`, {
+        method:      'POST',
+        headers:     { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body:        JSON.stringify(payload),
+        signal:      controller.signal,
+      });
+
+      clearTimeout(timeout);
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (res.status === 409 || (data.error && data.error.toLowerCase().includes('email'))) {
+          emailExists = true;
+          document.getElementById('email-exists-box').classList.add('visible');
+          btn.classList.remove('loading');
+          updateSubmitState();
+          return;
+        }
+        throw new Error(data?.error || data?.message || `Registration failed (${res.status})`);
+      }
+
+      const result        = data?.data || data;
+      const exchangeToken = result?.exchangeToken || result?.exchange_token;
+      if (!exchangeToken) throw new Error('No exchange token received — please try again.');
+
+      const rp = new URLSearchParams();
+      rp.append('exchangeToken', exchangeToken);
+      if (result?.appExchangePage) rp.append('appExchangePage', result.appExchangePage);
+      rp.append('trial', 'true');
+
+      const redirectTo = `${APP_COMPLETE_URL}?${rp.toString()}`;
+
+      document.getElementById('form-fields').classList.add('hidden');
+      document.getElementById('success-panel').classList.add('visible');
+      document.getElementById('redirect-btn').href = redirectTo;
+      btn.classList.remove('loading');
+
+      setTimeout(() => { window.location.href = redirectTo; }, 2000);
+
+    } catch (err) {
+      btn.classList.remove('loading');
+      if (turnstileWidgetId !== null && window.turnstile) {
+        try { window.turnstile.reset(turnstileWidgetId); turnstileToken = ''; } catch(e) {}
+      }
+      updateSubmitState();
+      if (err.name === 'AbortError') {
+        showGlobalError('Request timed out. Please check your connection and try again.');
+      } else {
+        showGlobalError(err.message || 'Unable to create account. Please try again.');
+      }
+    }
+  });
+
+  document.getElementById('name').addEventListener('input', () => setFieldError('fg-name', false));
+</script>
+</body>
+</html>

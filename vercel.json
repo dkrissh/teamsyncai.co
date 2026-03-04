@@ -1,0 +1,25 @@
+{
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/demo",
+      "permanent": true
+    },
+    {
+      "source": "/legal/privacy",
+      "destination": "https://teamsyncai.com/legal/privacy",
+      "permanent": true
+    },
+    {
+      "source": "/legal/terms",
+      "destination": "https://teamsyncai.com/legal/terms",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/demo",
+      "destination": "/index.html"
+    }
+  ]
+}
