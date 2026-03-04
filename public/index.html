@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TeamSyncAI — Free Hiring Guide</title>
+  <title>TeamSyncAI — Free AI Hiring Guide</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -190,7 +190,6 @@
     }
 
     .field-group.has-error input { border-color: #e74c3c; }
-
     .error-msg { font-size: 0.75rem; color: #c0392b; margin-top: 5px; display: none; }
     .field-group.has-error .error-msg { display: block; }
 
@@ -390,9 +389,9 @@
   <section class="hero">
     <div class="hero-left">
       <div class="eyebrow">For founders &amp; ops leads</div>
-      <h1>Answer 5 questions.<br>Get a guide built<br>for <em>your exact role.</em></h1>
+      <h1>Get your free<br><em>AI hiring guide.</em></h1>
       <p class="hero-sub">
-        Custom interview questions, scoring criteria, and 30/60/90 day check-ins — generated for your specific role and team. Free.
+        Custom interview questions, scoring criteria, and 30/60/90 day check-ins — built for your exact role and team. Free.
       </p>
       <div class="proof-row">
         <div class="proof-item"><span class="proof-dot"></span>~70% less screening time</div>
@@ -467,7 +466,7 @@
           </div>
 
           <button type="submit" class="btn-primary" id="submit-btn" disabled>
-            <span class="btn-text">Generate My Free Hiring Guide →</span>
+            <span class="btn-text">Get My Free Hiring Guide →</span>
             <span class="btn-loader"><span class="spinner"></span></span>
           </button>
         </form>
@@ -481,12 +480,12 @@
       <div class="feat-card">
         <div class="feat-icon">📋</div>
         <div class="feat-title">AI Hiring Guide</div>
-        <div class="feat-desc">Custom interview questions and scoring criteria generated from 5 questions about your specific role and team.</div>
+        <div class="feat-desc">Custom interview questions and scoring criteria built for your exact role — not a generic template.</div>
       </div>
       <div class="feat-card">
         <div class="feat-icon">🎥</div>
         <div class="feat-title">Async Video Screening</div>
-        <div class="feat-desc">Candidates record on their time. You get a ranked shortlist — skip the 30-min qualifying calls that go nowhere.</div>
+        <div class="feat-desc">Candidates record on their time. You get a ranked shortlist — skip the 30-min calls that go nowhere.</div>
       </div>
       <div class="feat-card">
         <div class="feat-icon">📊</div>
@@ -507,13 +506,12 @@
 </div>
 
 <script>
-  // ── CONFIG — only change these ────────────────────────────────────────
-  const TURNSTILE_SITE_KEY = '0x4AAAAAAA6GdaAB-8aAzYLn'; // REPLACE with your real Turnstile key
+  // ── CONFIG ────────────────────────────────────────────────────────────
+  const TURNSTILE_SITE_KEY = '0x4AAAAAAA6GdaAB-8aAzYLn';
   const AUTH_API           = 'https://auth-api.teamsyncai.com/api/auth';
   const APP_COMPLETE_URL   = 'https://app.teamsyncai.com/sign-up-complete';
   // ─────────────────────────────────────────────────────────────────────
 
-  // UTM / ref parsing
   const params      = new URLSearchParams(window.location.search);
   const utmSource   = params.get('utm_source')   || '';
   const utmCampaign = params.get('utm_campaign') || '';
@@ -529,7 +527,6 @@
     }, 300);
   }
 
-  // ── Turnstile ─────────────────────────────────────────────────────────
   let turnstileToken    = '';
   let turnstileWidgetId = null;
 
@@ -576,7 +573,6 @@
 
   setTimeout(initTurnstile, 300);
 
-  // ── Email existence check ─────────────────────────────────────────────
   let emailCheckTimer = null;
   let emailIsValid    = false;
   let emailExists     = false;
@@ -599,10 +595,10 @@
   }
 
   document.getElementById('email').addEventListener('input', function() {
-    const email      = this.value.trim();
-    const re         = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-    emailIsValid     = re.test(email);
-    emailExists      = false;
+    const email  = this.value.trim();
+    const re     = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    emailIsValid = re.test(email);
+    emailExists  = false;
     document.getElementById('email-exists-box').classList.remove('visible');
     document.getElementById('fg-email').classList.remove('has-error');
     clearTimeout(emailCheckTimer);
@@ -610,7 +606,6 @@
     updateSubmitState();
   });
 
-  // ── Submit gate ───────────────────────────────────────────────────────
   function updateSubmitState() {
     const name    = document.getElementById('name').value.trim();
     const terms   = document.getElementById('chk-terms').checked;
@@ -619,10 +614,9 @@
       !(name && emailIsValid && !emailExists && terms && privacy && turnstileToken);
   }
 
-  ['name'].forEach(id => document.getElementById(id).addEventListener('input', updateSubmitState));
+  document.getElementById('name').addEventListener('input', updateSubmitState);
   ['chk-terms','chk-privacy'].forEach(id => document.getElementById(id).addEventListener('change', updateSubmitState));
 
-  // ── Helpers ───────────────────────────────────────────────────────────
   function setFieldError(groupId, show) {
     document.getElementById(groupId).classList.toggle('has-error', show);
   }
@@ -637,12 +631,10 @@
     document.getElementById('global-error').classList.remove('visible');
   }
 
-  // ── Submit ────────────────────────────────────────────────────────────
   document.getElementById('lead-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     hideGlobalError();
 
-    // Honeypot
     if (document.getElementById('hp-website').value) return;
 
     const name    = document.getElementById('name').value.trim();
