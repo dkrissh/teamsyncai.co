@@ -509,7 +509,7 @@
   // ── CONFIG ────────────────────────────────────────────────────────────
   const TURNSTILE_SITE_KEY = '0x4AAAAAAA6GdaAB-8aAzYLn';
   const AUTH_API           = 'https://auth-api.teamsyncai.com/api/auth';
-  const APP_COMPLETE_URL   = 'https://app.teamsyncai.com/sign-up-complete';
+  // APP_COMPLETE_URL removed — redirecting directly to appExchangePage
   // ─────────────────────────────────────────────────────────────────────
 
   const params      = new URLSearchParams(window.location.search);
@@ -698,16 +698,19 @@
         throw new Error(data?.error || data?.message || `Registration failed (${res.status})`);
       }
 
-      const result        = data?.data || data;
-      const exchangeToken = result?.exchangeToken || result?.exchange_token;
-      if (!exchangeToken) throw new Error('No exchange token received — please try again.');
+      const result          = data?.data || data;
+      const appExchangePage = result?.appExchangePage || result?.app_exchange_page;
+      const exchangeToken   = result?.exchangeToken   || result?.exchange_token;
 
-      const rp = new URLSearchParams();
-      rp.append('exchangeToken', exchangeToken);
-      if (result?.appExchangePage) rp.append('appExchangePage', result.appExchangePage);
-      rp.append('trial', 'true');
-
-      const redirectTo = `${APP_COMPLETE_URL}?${rp.toString()}`;
+      // Use appExchangePage directly — fallback to constructing from token
+      let redirectTo;
+      if (appExchangePage) {
+        redirectTo = appExchangePage;
+      } else if (exchangeToken) {
+        redirectTo = `https://app.teamsyncai.com/auth/exchange?token=${exchangeToken}`;
+      } else {
+        throw new Error('No exchange token received — please try again.');
+      }
 
       document.getElementById('form-fields').classList.add('hidden');
       document.getElementById('success-panel').classList.add('visible');
