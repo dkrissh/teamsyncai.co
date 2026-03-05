@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TeamSyncAI — Free AI Hiring Guide</title>
+  <title>TeamSyncAI — AI-Powered Hiring System</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -372,6 +372,117 @@
     .footer-right { font-size: 0.78rem; color: var(--ink-muted); }
     .footer-right a { color: var(--accent); text-decoration: none; }
 
+
+    /* ── NARRATIVE SECTION ── */
+    .narrative {
+      padding: 0 0 80px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.45s forwards;
+    }
+
+    .narrative-intro {
+      max-width: 680px;
+      margin: 0 auto 64px;
+      text-align: center;
+    }
+
+    .narrative-intro h2 {
+      font-family: 'Instrument Serif', serif;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      margin-bottom: 20px;
+    }
+
+    .narrative-intro h2 em { font-style: italic; color: var(--accent); }
+
+    .narrative-intro p {
+      font-size: 1.05rem;
+      line-height: 1.75;
+      color: var(--ink-soft);
+      font-weight: 300;
+    }
+
+    .narrative-intro p + p { margin-top: 14px; }
+
+    .narrative-intro .broken {
+      font-size: 0.95rem;
+      line-height: 1.9;
+      color: var(--ink-muted);
+      font-style: italic;
+      margin: 20px 0;
+      padding: 20px 24px;
+      border-left: 3px solid var(--border);
+      text-align: left;
+    }
+
+    .steps { display: flex; flex-direction: column; gap: 0; }
+
+    .step {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 32px;
+      padding: 48px 0;
+      border-bottom: 1px solid var(--border);
+      align-items: start;
+    }
+
+    .step:last-child { border-bottom: none; }
+
+    .step-number {
+      width: 56px;
+      height: 56px;
+      background: var(--accent-lt);
+      border: 1.5px solid rgba(26,107,74,0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Instrument Serif', serif;
+      font-size: 1.4rem;
+      color: var(--accent);
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+
+    .step-content {}
+
+    .step-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .step-title {
+      font-family: 'Instrument Serif', serif;
+      font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 12px;
+      line-height: 1.2;
+    }
+
+    .step-body {
+      font-size: 0.97rem;
+      line-height: 1.75;
+      color: var(--ink-soft);
+      font-weight: 300;
+      max-width: 600px;
+    }
+
+    .step-body p + p { margin-top: 12px; }
+
+    .step-body strong { color: var(--ink); font-weight: 600; }
+
+    @media (max-width: 640px) {
+      .step { grid-template-columns: 1fr; gap: 16px; }
+      .step-number { width: 44px; height: 44px; font-size: 1.1rem; }
+    }
+
     @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes spin   { to { transform: rotate(360deg); } }
   </style>
@@ -383,26 +494,25 @@
     <a href="https://teamsyncai.com" class="logo">
       <img src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/teamsyncai_logo.png" alt="TeamSyncAI">
     </a>
-    <span class="nav-badge">Free — No credit card</span>
+    <span class="nav-badge">Free to start — No credit card</span>
   </nav>
 
   <section class="hero">
     <div class="hero-left">
-      <div class="eyebrow">For founders &amp; ops leads</div>
-      <h1>Get your free<br><em>AI hiring guide.</em></h1>
+      <h1>Stop guessing.<br>Start hiring<br>with <em>AI.</em></h1>
       <p class="hero-sub">
-        Custom interview questions, scoring criteria, and 30/60/90 day check-ins — built for your exact role and team. Free.
+AI-powered role calibration, structured interviews, and post-hire check-ins — built for your exact role and team. Free to start.
       </p>
       <div class="proof-row">
-        <div class="proof-item"><span class="proof-dot"></span>~70% less screening time</div>
+        <div class="proof-item"><span class="proof-dot"></span>Calibration to 90-day check-in</div>
         <div class="proof-item"><span class="proof-dot"></span>No HR team needed</div>
         <div class="proof-item"><span class="proof-dot"></span>Free to start</div>
       </div>
     </div>
 
     <div class="form-card">
-      <div class="form-title">Get your free hiring guide</div>
-      <div class="form-subtitle">Takes 60 seconds. We generate it once you're inside.</div>
+      <div class="form-title">Build your AI hiring system — free</div>
+      <div class="form-subtitle">Add your role. Answer 5 questions. Get everything from interview questions to 90-day check-ins — built for your exact team.</div>
 
       <!-- SUCCESS -->
       <div class="success-panel" id="success-panel">
@@ -412,7 +522,7 @@
           </svg>
         </div>
         <h3>You're in.</h3>
-        <p>Taking you to TeamSyncAI now — your hiring guide will be ready in under 2 minutes.</p>
+        <p>Taking you to TeamSyncAI now — your hiring system will be ready once you add your role.</p>
         <a href="#" class="btn-secondary" id="redirect-btn">Open TeamSyncAI →</a>
       </div>
 
@@ -466,7 +576,7 @@
           </div>
 
           <button type="submit" class="btn-primary" id="submit-btn" disabled>
-            <span class="btn-text">Get My Free Hiring Guide →</span>
+            <span class="btn-text">Build My Hiring System — Free →</span>
             <span class="btn-loader"><span class="spinner"></span></span>
           </button>
         </form>
@@ -474,23 +584,79 @@
     </div>
   </section>
 
+
+  <!-- NARRATIVE -->
+  <section class="narrative">
+
+    <div class="narrative-intro">
+      <h2>Most companies hire<br>the <em>same broken way.</em><br>AI can fix that.</h2>
+      <div class="broken">
+        Post a job. Get 80 resumes. Schedule 20 screening calls.<br>
+        Cancel half of them. Hire someone. Hope for the best.<br>
+        Repeat in 6 months when it doesn't work out.
+      </div>
+      <p>The problem isn't finding candidates. It's everything that happens before and after — knowing what to actually ask, how to evaluate fairly, and whether the hire worked out the way you hoped.</p>
+      <p>That's the part nobody teaches you. And it's the part TeamSyncAI is built to solve.</p>
+    </div>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <div class="step-label">Before the interview</div>
+          <div class="step-title">We start by asking you the hard questions.</div>
+          <div class="step-body">
+            <p>Not about the job description — about what actually makes someone succeed or fail on your specific team. What does good look like at 90 days? What kind of person always flames out here? How much hand-holding is realistic in the first month?</p>
+            <p>Most founders have never been asked these questions before an interview. <strong>Our AI uses your answers to build everything else</strong> — calibrated to your team, not a generic template.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <div class="step-label">During the interview</div>
+          <div class="step-title">Then we build your interview system.</div>
+          <div class="step-body">
+            <p>Not a list of generic questions you found on Google. Evaluation goals weighted to what actually matters for this role. Behavioural questions designed around the answers you gave us. Follow-up probes for when candidates get vague.</p>
+            <p><strong>The AI generates scoring criteria so you evaluate every candidate the same way</strong> — not going with your gut on a Tuesday afternoon because the person seemed nice.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <div class="step-label">After the hire</div>
+          <div class="step-title">Then we help you find out if you were right.</div>
+          <div class="step-body">
+            <p>Most hiring tools stop at the offer letter. We send you check-in questions at 30, 60, and 90 days — tied to the exact goals you set at the start. Is this person doing what you hired them to do? Are the early warning signs you identified showing up?</p>
+            <p><strong>Over time, the AI learns what good hiring looks like for your team specifically.</strong> Every hire makes the next one smarter.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
   <section class="features">
-    <div class="features-label">What you get inside</div>
+    <div class="features-label">Everything included — free to start</div>
     <div class="features-grid">
       <div class="feat-card">
-        <div class="feat-icon">📋</div>
-        <div class="feat-title">AI Hiring Guide</div>
-        <div class="feat-desc">Custom interview questions and scoring criteria built for your exact role — not a generic template.</div>
+        <div class="feat-icon">🎯</div>
+        <div class="feat-title">AI Role Calibration</div>
+        <div class="feat-desc">Answer a few questions about the role. Our AI builds everything around your exact hire — not a generic template.</div>
       </div>
       <div class="feat-card">
-        <div class="feat-icon">🎥</div>
-        <div class="feat-title">Async Video Screening</div>
-        <div class="feat-desc">Candidates record on their time. You get a ranked shortlist — skip the 30-min calls that go nowhere.</div>
+        <div class="feat-icon">📋</div>
+        <div class="feat-title">AI Interview System</div>
+        <div class="feat-desc">AI-generated evaluation goals, behavioural questions, and follow-up probes — everything a good HR team would build.</div>
       </div>
       <div class="feat-card">
         <div class="feat-icon">📊</div>
-        <div class="feat-title">30/60/90 Day Check-ins</div>
-        <div class="feat-desc">Automated post-hire check-ins tied to your evaluation goals — so you know early if the hire is working.</div>
+        <div class="feat-title">AI Post-Hire Intelligence</div>
+        <div class="feat-desc">AI-driven 30/60/90 day check-ins tied to your goals — so you know early if the hire is working.</div>
       </div>
     </div>
   </section>
