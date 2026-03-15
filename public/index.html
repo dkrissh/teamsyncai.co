@@ -3,19 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Google tag (gtag.js) -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-E10WDE2RD4"
-    ></script>
+    <!-- Google tag (gtag.js) - only loads after user consent -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag() {
         dataLayer.push(arguments);
       }
-      gtag("js", new Date());
-
-      gtag("config", "G-E10WDE2RD4");
+      gtag("consent", "default", {
+        analytics_storage: "denied",
+        ad_storage: "denied",
+      });
     </script>
     <title>TeamSyncAI — AI-Powered Hiring System</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -1276,6 +1273,117 @@
           transform: rotate(360deg);
         }
       }
+
+      /* ── COOKIE BANNER ── */
+      .cookie-banner {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--white);
+        border-top: 1px solid var(--border);
+        padding: 20px 24px;
+        box-shadow: 0 -4px 24px rgba(13, 15, 18, 0.1);
+        z-index: 1000;
+        display: none;
+        animation: slideUp 0.4s ease;
+      }
+
+      .cookie-banner.show {
+        display: block;
+      }
+
+      @keyframes slideUp {
+        from {
+          transform: translateY(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .cookie-content {
+        max-width: 1100px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+      }
+
+      @media (max-width: 768px) {
+        .cookie-content {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+
+      .cookie-text {
+        flex: 1;
+        font-size: 0.9rem;
+        color: var(--ink-soft);
+        line-height: 1.6;
+      }
+
+      .cookie-text a {
+        color: var(--accent);
+        text-decoration: underline;
+        font-weight: 600;
+      }
+
+      .cookie-actions {
+        display: flex;
+        gap: 12px;
+        flex-shrink: 0;
+      }
+
+      @media (max-width: 768px) {
+        .cookie-actions {
+          width: 100%;
+          gap: 12px;
+        }
+      }
+
+      .cookie-btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: var(--radius);
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+      }
+
+      @media (max-width: 768px) {
+        .cookie-btn {
+          flex: 1;
+        }
+      }
+
+      .cookie-btn-accept {
+        background: var(--accent);
+        color: white;
+      }
+
+      .cookie-btn-accept:hover {
+        background: #155c3e;
+        box-shadow: 0 4px 12px rgba(26, 107, 74, 0.3);
+      }
+
+      .cookie-btn-decline {
+        background: var(--surface);
+        color: var(--ink);
+        border: 1.5px solid var(--border);
+      }
+
+      .cookie-btn-decline:hover {
+        background: var(--border);
+        border-color: var(--ink-muted);
+      }
     </style>
   </head>
   <body>
@@ -1294,11 +1402,11 @@
       <!-- HERO -->
       <section class="hero">
         <div class="hero-left">
-          <h1>
+          <h1 id="hero-title">
             Before you interview<br />candidates,
             <em>build<br />the interview.</em>
           </h1>
-          <p class="hero-proof" style="margin-bottom: 24px">
+          <p class="hero-proof" id="hero-subtitle" style="margin-bottom: 24px">
             Generate a structured hiring blueprint for your open role before you
             start interviewing.
           </p>
@@ -1310,8 +1418,8 @@
 
         <!-- FORM -->
         <div class="form-card">
-          <div class="form-title">Generate your interview blueprint</div>
-          <div class="form-subtitle">
+          <div class="form-title" id="form-title">Generate your interview blueprint</div>
+          <div class="form-subtitle" id="form-subtitle">
             Add your role. Answer a few questions. Your blueprint is ready in
             minutes — free.
           </div>
@@ -2100,6 +2208,67 @@
       // APP_COMPLETE_URL removed — redirecting directly to appExchangePage
       // ─────────────────────────────────────────────────────────────────────
 
+      // ── PAGE VARIANTS (A/B/C TESTING) ─────────────────────────────────────
+      let currentVariant = null;
+
+      async function fetchPageVariant() {
+        try {
+          // Call your API to get page variant
+          const response = await fetch(`${AUTH_API}/page-variant`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          });
+
+          if (!response.ok) {
+            console.warn("Failed to fetch variant, using defaults");
+            return;
+          }
+
+          const data = await response.json();
+          const variant = data.data || data;
+
+          if (!variant) return;
+
+          currentVariant = {
+            id: variant.id || variant.variant_id,
+            version: variant.version || "default",
+            heroTitle: variant.hero_title,
+            heroSubtitle: variant.hero_subtitle,
+            formTitle: variant.form_title,
+            formSubtitle: variant.form_subtitle,
+          };
+
+          // Apply variant to DOM
+          if (variant.hero_title) {
+            document.getElementById("hero-title").innerHTML = variant.hero_title;
+          }
+          if (variant.hero_subtitle) {
+            document.getElementById("hero-subtitle").innerHTML =
+              variant.hero_subtitle;
+          }
+          if (variant.form_title) {
+            document.getElementById("form-title").textContent = variant.form_title;
+          }
+          if (variant.form_subtitle) {
+            document.getElementById("form-subtitle").textContent =
+              variant.form_subtitle;
+          }
+        } catch (err) {
+          console.warn("Error fetching page variant:", err);
+          // Graceful fallback — use defaults
+        }
+      }
+
+      // Fetch variant on page load
+      document.addEventListener("DOMContentLoaded", fetchPageVariant);
+      // Also try on load (for cached pages)
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", fetchPageVariant);
+      } else {
+        fetchPageVariant();
+      }
+      // ─────────────────────────────────────────────────────────────────────
+
       const params = new URLSearchParams(window.location.search);
       const utmSource = params.get("utm_source") || "";
       const utmCampaign = params.get("utm_campaign") || "";
@@ -2316,6 +2485,12 @@
               page: window.location.href,
               submitted_at: new Date().toISOString(),
             },
+            ...(currentVariant && {
+              variant: {
+                id: currentVariant.id,
+                version: currentVariant.version,
+              },
+            }),
           };
 
           try {
@@ -2400,6 +2575,95 @@
       document
         .getElementById("name")
         .addEventListener("input", () => setFieldError("fg-name", false));
+    </script>
+
+    <!-- Cookie Banner -->
+    <div class="cookie-banner" id="cookieBanner">
+      <div class="cookie-content">
+        <p class="cookie-text">
+          We use cookies to enhance your experience and analyze site usage, including Google Analytics to measure website performance. By clicking "Accept", you consent to our use of cookies.
+          <a href="https://teamsyncai.com/privacy" target="_blank">Learn more</a>
+        </p>
+        <div class="cookie-actions">
+          <button class="cookie-btn cookie-btn-decline" id="cookieDecline">
+            Decline
+          </button>
+          <button class="cookie-btn cookie-btn-accept" id="cookieAccept">
+            Accept
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Cookie consent management
+      const cookieBanner = document.getElementById("cookieBanner");
+      const cookieAccept = document.getElementById("cookieAccept");
+      const cookieDecline = document.getElementById("cookieDecline");
+      const COOKIE_CONSENT_KEY = "ga-cookie-consent";
+      const GA_SCRIPT_ID = "ga-script";
+
+      function getCookieConsent() {
+        return localStorage.getItem(COOKIE_CONSENT_KEY);
+      }
+
+      function setCookieConsent(value) {
+        localStorage.setItem(COOKIE_CONSENT_KEY, value);
+      }
+
+      function showCookieBanner() {
+        cookieBanner.classList.add("show");
+      }
+
+      function hideCookieBanner() {
+        cookieBanner.classList.remove("show");
+      }
+
+      function loadGoogleAnalytics() {
+        const script = document.createElement("script");
+        script.id = GA_SCRIPT_ID;
+        script.async = true;
+        script.src = "https://www.googletagmanager.com/gtag/js?id=G-E10WDE2RD4";
+        script.onload = function () {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag("js", new Date());
+          gtag("config", "G-E10WDE2RD4");
+          gtag("consent", "update", {
+            analytics_storage: "granted",
+            ad_storage: "granted",
+          });
+        };
+        document.head.appendChild(script);
+      }
+
+      function handleAccept() {
+        setCookieConsent("accepted");
+        hideCookieBanner();
+        loadGoogleAnalytics();
+      }
+
+      function handleDecline() {
+        setCookieConsent("declined");
+        hideCookieBanner();
+      }
+
+      // Initialize cookie consent on page load
+      document.addEventListener("DOMContentLoaded", function () {
+        const consent = getCookieConsent();
+
+        if (!consent) {
+          showCookieBanner();
+        } else if (consent === "accepted") {
+          loadGoogleAnalytics();
+        }
+      });
+
+      // Event listeners
+      cookieAccept.addEventListener("click", handleAccept);
+      cookieDecline.addEventListener("click", handleDecline);
     </script>
   </body>
 </html>
