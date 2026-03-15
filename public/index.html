@@ -1,1531 +1,2405 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TeamSyncAI — AI-Powered Hiring System</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
-  <style>
-    :root {
-      --ink:         #0d0f12;
-      --ink-soft:    #4a5060;
-      --ink-muted:   #8a91a0;
-      --surface:     #f9f8f6;
-      --white:       #ffffff;
-      --accent:      #1a6b4a;
-      --accent-lt:   #e8f4ef;
-      --accent-glow: rgba(26,107,74,0.12);
-      --border:      #e3e1dc;
-      --radius:      12px;
-      --shadow:      0 2px 16px rgba(13,15,18,0.08);
-      --shadow-lg:   0 8px 40px rgba(13,15,18,0.13);
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--surface);
-      color: var(--ink);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 80% 50% at 60% -10%, rgba(26,107,74,0.07) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 40% at -10% 80%, rgba(26,107,74,0.05) 0%, transparent 50%);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .page {
-      position: relative;
-      z-index: 1;
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    /* ── NAV ── */
-    nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 24px 0 0;
-      opacity: 0;
-      animation: fadeUp 0.5s ease 0.1s forwards;
-    }
-
-    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-    .logo img { height: 60px; width: auto; }
-    .logo-text { font-family: 'Instrument Serif', serif; font-size: 1.25rem; color: var(--ink); letter-spacing: -0.02em; }
-    .logo-text span { color: var(--accent); }
-
-    .nav-badge {
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: var(--accent);
-      background: var(--accent-lt);
-      border: 1px solid rgba(26,107,74,0.2);
-      padding: 4px 12px;
-      border-radius: 100px;
-    }
-
-    /* ── HERO ── */
-    .hero {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 64px;
-      align-items: center;
-      padding: 72px 0 80px;
-    }
-
-    @media (max-width: 768px) {
-      .hero { grid-template-columns: 1fr; gap: 48px; padding: 48px 0 56px; }
-    }
-
-    .hero-left { opacity: 0; animation: fadeUp 0.6s ease 0.2s forwards; }
-
-    h1 {
-      font-family: 'Instrument Serif', serif;
-      font-size: clamp(2.2rem, 4vw, 3.2rem);
-      line-height: 1.1;
-      letter-spacing: -0.03em;
-      color: var(--ink);
-      margin-bottom: 20px;
-    }
-
-    h1 em { font-style: italic; color: var(--accent); }
-
-    .hero-proof {
-      font-size: 1rem;
-      line-height: 1.75;
-      color: var(--ink-soft);
-      font-weight: 300;
-      max-width: 460px;
-      margin-bottom: 16px;
-    }
-
-    .hero-proof strong { color: var(--ink); font-weight: 600; }
-
-    .micro-trust {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.8rem;
-      color: var(--ink-muted);
-      margin-bottom: 32px;
-      font-weight: 400;
-    }
-
-    .micro-trust span { color: var(--border); }
-
-    /* ── FORM CARD ── */
-    .form-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 40px 36px;
-      box-shadow: var(--shadow-lg);
-      opacity: 0;
-      animation: fadeUp 0.6s ease 0.35s forwards;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .form-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--accent), #2dd4a0);
-    }
-
-    .form-title { font-family: 'Instrument Serif', serif; font-size: 1.4rem; letter-spacing: -0.02em; margin-bottom: 6px; }
-    .form-subtitle { font-size: 0.85rem; color: var(--ink-muted); margin-bottom: 24px; line-height: 1.55; }
-
-    .field-group { margin-bottom: 14px; }
-
-    label {
-      display: block;
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--ink-soft);
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      margin-bottom: 7px;
-    }
-
-    input[type="text"],
-    input[type="email"] {
-      width: 100%;
-      padding: 11px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.93rem;
-      color: var(--ink);
-      background: var(--surface);
-      transition: border-color 0.2s, box-shadow 0.2s;
-      outline: none;
-    }
-
-    input[type="text"]::placeholder,
-    input[type="email"]::placeholder { color: var(--ink-muted); }
-
-    input[type="text"]:focus,
-    input[type="email"]:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-glow);
-      background: var(--white);
-    }
-
-    .field-group.has-error input { border-color: #e74c3c; }
-    .error-msg { font-size: 0.75rem; color: #c0392b; margin-top: 5px; display: none; }
-    .field-group.has-error .error-msg { display: block; }
-
-    .email-exists-box {
-      display: none;
-      margin-top: 8px;
-      padding: 10px 12px;
-      background: #fefce8;
-      border: 1px solid #fde68a;
-      border-radius: 8px;
-      font-size: 0.78rem;
-      color: #92400e;
-      line-height: 1.55;
-    }
-    .email-exists-box.visible { display: block; }
-    .email-exists-box a { color: var(--accent); font-weight: 600; text-decoration: underline; }
-
-    .legal-section {
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .legal-row { display: flex; align-items: flex-start; gap: 9px; }
-
-    .legal-row input[type="checkbox"] {
-      width: 15px; height: 15px; min-width: 15px;
-      margin-top: 2px;
-      accent-color: var(--accent);
-      cursor: pointer;
-      padding: 0;
-    }
-
-    .legal-label {
-      font-size: 0.77rem;
-      color: var(--ink-soft);
-      line-height: 1.5;
-      cursor: pointer;
-      text-transform: none;
-      font-weight: 400;
-      letter-spacing: 0;
-    }
-    .legal-label a { color: var(--accent); text-decoration: underline; }
-
-    .turnstile-wrap {
-      margin-top: 14px;
-      padding: 12px 14px;
-      background: #f0f7f4;
-      border: 1px solid rgba(26,107,74,0.15);
-      border-radius: var(--radius);
-    }
-
-    .turnstile-lbl { font-size: 0.75rem; color: var(--ink-soft); margin-bottom: 10px; font-weight: 500; }
-
-    .ts-loading {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.78rem;
-      color: var(--ink-muted);
-      padding: 6px 0;
-    }
-
-    .ts-error { font-size: 0.75rem; color: #c0392b; margin-bottom: 6px; display: none; }
-    .retry-btn {
-      background: none; border: none; color: var(--accent);
-      font-size: 0.75rem; cursor: pointer; padding: 0;
-      text-decoration: underline; font-family: 'DM Sans', sans-serif;
-      display: none; margin-top: 4px;
-    }
-
-    .global-error {
-      display: none;
-      padding: 10px 14px;
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      color: #b91c1c;
-      margin-bottom: 12px;
-      line-height: 1.5;
-    }
-    .global-error.visible { display: block; }
-
-    .btn-primary {
-      width: 100%;
-      padding: 14px;
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: var(--radius);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 14px;
-      transition: background 0.2s, transform 0.15s, box-shadow 0.2s, opacity 0.2s;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .btn-primary:hover:not(:disabled) { background: #155c3e; box-shadow: 0 4px 20px rgba(26,107,74,0.3); transform: translateY(-1px); }
-    .btn-primary:active:not(:disabled) { transform: translateY(0); }
-    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
-    .btn-primary.loading { pointer-events: none; }
-    .btn-primary .btn-text { transition: opacity 0.2s; }
-    .btn-primary .btn-loader { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; }
-    .btn-primary.loading .btn-text { opacity: 0; }
-    .btn-primary.loading .btn-loader { display: flex; }
-
-    .spinner {
-      width: 18px; height: 18px;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-    }
-
-    .success-panel { display: none; text-align: center; padding: 16px 0; }
-    .success-panel.visible { display: block; }
-    .form-fields.hidden { display: none; }
-
-    .success-icon {
-      width: 56px; height: 56px;
-      background: var(--accent-lt);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 20px;
-    }
-    .success-icon svg { width: 26px; height: 26px; stroke: var(--accent); }
-    .success-panel h3 { font-family: 'Instrument Serif', serif; font-size: 1.5rem; margin-bottom: 8px; }
-    .success-panel p { font-size: 0.88rem; color: var(--ink-soft); margin-bottom: 20px; line-height: 1.6; }
-
-    .btn-secondary {
-      display: inline-block;
-      padding: 11px 28px;
-      background: var(--accent);
-      color: white;
-      border-radius: var(--radius);
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 600;
-      transition: background 0.2s;
-    }
-    .btn-secondary:hover { background: #155c3e; }
-
-    /* ── DIVIDER ── */
-    .section-divider {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 0;
-    }
-
-    /* ── WHAT YOU GET ── */
-    .output-section {
-      padding: 80px 0;
-      opacity: 0;
-      animation: fadeUp 0.6s ease 0.4s forwards;
-    }
-
-    .section-label {
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: var(--accent);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin-bottom: 16px;
-    }
-
-    .output-section h2 {
-      font-family: 'Instrument Serif', serif;
-      font-size: clamp(1.8rem, 3vw, 2.4rem);
-      letter-spacing: -0.03em;
-      color: var(--ink);
-      margin-bottom: 12px;
-      line-height: 1.15;
-    }
-
-    .output-section h2 em { font-style: italic; color: var(--accent); }
-
-    .output-intro {
-      font-size: 1rem;
-      color: var(--ink-soft);
-      font-weight: 300;
-      max-width: 540px;
-      line-height: 1.7;
-      margin-bottom: 48px;
-    }
-
-    .output-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-
-    @media (max-width: 768px) { .output-grid { grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 480px) { .output-grid { grid-template-columns: 1fr; } }
-
-    .output-item {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px 22px;
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      transition: box-shadow 0.2s, transform 0.2s;
-    }
-
-    .output-item:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
-
-    .output-check {
-      width: 20px; height: 20px; min-width: 20px;
-      background: var(--accent-lt);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      margin-top: 1px;
-    }
-
-    .output-check svg { width: 10px; height: 10px; stroke: var(--accent); stroke-width: 2.5; }
-
-    .output-text {
-      font-size: 0.85rem;
-      color: var(--ink-soft);
-      line-height: 1.5;
-      font-weight: 400;
-    }
-
-    .output-text strong { color: var(--ink); font-weight: 600; display: block; margin-bottom: 2px; }
-
-    /* ── HOW IT WORKS ── */
-    .how-section {
-      padding: 80px 0;
-      border-top: 1px solid var(--border);
-      opacity: 0;
-      animation: fadeUp 0.6s ease 0.45s forwards;
-    }
-
-    .how-section h2 {
-      font-family: 'Instrument Serif', serif;
-      font-size: clamp(1.8rem, 3vw, 2.4rem);
-      letter-spacing: -0.03em;
-      color: var(--ink);
-      margin-bottom: 12px;
-      line-height: 1.15;
-    }
-
-    .how-section h2 em { font-style: italic; color: var(--accent); }
-
-    .how-intro {
-      font-size: 1rem;
-      color: var(--ink-soft);
-      font-weight: 300;
-      max-width: 540px;
-      line-height: 1.7;
-      margin-bottom: 56px;
-    }
-
-    .steps { display: flex; flex-direction: column; }
-
-    .step {
-      display: grid;
-      grid-template-columns: 64px 1fr;
-      gap: 32px;
-      padding: 40px 0;
-      border-bottom: 1px solid var(--border);
-      align-items: start;
-    }
-
-    .step:last-child { border-bottom: none; padding-bottom: 0; }
-
-    @media (max-width: 640px) {
-      .step { grid-template-columns: 1fr; gap: 14px; }
-    }
-
-    .step-num {
-      width: 48px; height: 48px;
-      background: var(--accent-lt);
-      border: 1.5px solid rgba(26,107,74,0.2);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Instrument Serif', serif;
-      font-size: 1.3rem;
-      color: var(--accent);
-      flex-shrink: 0;
-      margin-top: 4px;
-    }
-
-    .step-tag {
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: var(--accent);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-    }
-
-    .step-title {
-      font-family: 'Instrument Serif', serif;
-      font-size: clamp(1.2rem, 2vw, 1.6rem);
-      letter-spacing: -0.02em;
-      color: var(--ink);
-      margin-bottom: 12px;
-      line-height: 1.2;
-    }
-
-    .step-body {
-      font-size: 0.95rem;
-      line-height: 1.75;
-      color: var(--ink-soft);
-      font-weight: 300;
-      max-width: 580px;
-    }
-
-    .step-body p + p { margin-top: 12px; }
-    .step-body strong { color: var(--ink); font-weight: 600; }
-
-    /* ── FAQ ── */
-    .faq-section {
-      padding: 80px 0;
-      border-top: 1px solid var(--border);
-      opacity: 0;
-      animation: fadeUp 0.6s ease 0.5s forwards;
-    }
-
-    .faq-section h2 {
-      font-family: 'Instrument Serif', serif;
-      font-size: clamp(1.8rem, 3vw, 2.4rem);
-      letter-spacing: -0.03em;
-      color: var(--ink);
-      margin-bottom: 48px;
-      line-height: 1.15;
-    }
-
-    .faq-list { display: flex; flex-direction: column; max-width: 760px; }
-
-    .faq-item {
-      border-bottom: 1px solid var(--border);
-      padding: 0;
-    }
-
-    .faq-item:first-child { border-top: 1px solid var(--border); }
-
-    .faq-question {
-      width: 100%;
-      background: none;
-      border: none;
-      text-align: left;
-      padding: 22px 0;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.97rem;
-      font-weight: 600;
-      color: var(--ink);
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      transition: color 0.2s;
-    }
-
-    .faq-question:hover { color: var(--accent); }
-
-    .faq-icon {
-      width: 20px; height: 20px; min-width: 20px;
-      border: 1.5px solid var(--border);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      transition: background 0.2s, border-color 0.2s, transform 0.2s;
-      flex-shrink: 0;
-    }
-
-    .faq-icon svg { width: 8px; height: 8px; stroke: var(--ink-muted); stroke-width: 2.5; transition: transform 0.25s; }
-
-    .faq-item.open .faq-icon { background: var(--accent); border-color: var(--accent); }
-    .faq-item.open .faq-icon svg { stroke: white; transform: rotate(45deg); }
-
-    .faq-answer {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.3s ease, padding 0.3s ease;
-    }
-
-    .faq-item.open .faq-answer { max-height: 400px; }
-
-    .faq-answer-inner {
-      padding: 0 0 22px;
-      font-size: 0.9rem;
-      color: var(--ink-soft);
-      line-height: 1.75;
-      font-weight: 300;
-      max-width: 640px;
-    }
-
-    .faq-answer-inner strong { color: var(--ink); font-weight: 600; }
-    .faq-answer-inner a { color: var(--accent); text-decoration: underline; }
-
-    /* ── BOTTOM CTA ── */
-    .bottom-cta {
-      padding: 80px 0;
-      border-top: 1px solid var(--border);
-      text-align: center;
-      opacity: 0;
-      animation: fadeUp 0.6s ease 0.55s forwards;
-    }
-
-    .bottom-cta h2 {
-      font-family: 'Instrument Serif', serif;
-      font-size: clamp(1.8rem, 3vw, 2.6rem);
-      letter-spacing: -0.03em;
-      color: var(--ink);
-      margin-bottom: 14px;
-      line-height: 1.15;
-    }
-
-    .bottom-cta h2 em { font-style: italic; color: var(--accent); }
-
-    .bottom-cta p {
-      font-size: 1rem;
-      color: var(--ink-soft);
-      font-weight: 300;
-      margin-bottom: 32px;
-      line-height: 1.7;
-    }
-
-    .btn-cta {
-      display: inline-block;
-      padding: 16px 36px;
-      background: var(--accent);
-      color: white;
-      border-radius: var(--radius);
-      text-decoration: none;
-      font-size: 1rem;
-      font-weight: 600;
-      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-    }
-
-    .btn-cta:hover { background: #155c3e; box-shadow: 0 4px 20px rgba(26,107,74,0.3); transform: translateY(-1px); }
-
-    .bottom-microtrust {
-      margin-top: 14px;
-      font-size: 0.78rem;
-      color: var(--ink-muted);
-    }
-
-    /* ── FOOTER ── */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 24px 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      opacity: 0;
-      animation: fadeUp 0.4s ease 0.6s forwards;
-    }
-    .footer-left { font-size: 0.78rem; color: var(--ink-muted); }
-    .footer-right { font-size: 0.78rem; color: var(--ink-muted); }
-    .footer-right a { color: var(--accent); text-decoration: none; }
-
-
-    /* ── SCREENSHOTS ── */
-    .screenshot {
-      width: 100%;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      box-shadow: 0 4px 24px rgba(13,15,18,0.10);
-      display: block;
-      margin-top: 24px;
-    }
-
-
-
-    /* ── CURIOSITY BRIDGE ── */
-    .curiosity-bridge {
-      text-align: center;
-      padding: 40px 0 0;
-    }
-
-    .curiosity-bridge p {
-      font-size: 1.05rem;
-      color: var(--ink-soft);
-      font-weight: 300;
-      line-height: 1.7;
-      max-width: 520px;
-      margin: 0 auto;
-    }
-
-    .curiosity-bridge p em {
-      font-style: italic;
-      color: var(--ink);
-      font-weight: 400;
-    }
-
-    .curiosity-arrow {
-      display: block;
-      margin: 16px auto 0;
-      color: var(--ink-muted);
-      font-size: 1.2rem;
-      animation: bounceDown 1.8s ease infinite;
-    }
-
-    @keyframes bounceDown {
-      0%, 100% { transform: translateY(0); opacity: 0.5; }
-      50%       { transform: translateY(6px); opacity: 1; }
-    }
-
-    /* ── IMMEDIATE OUTPUT SECTION ── */
-    .output-preview {
-      padding: 0 0 80px;
-      opacity: 0;
-      animation: fadeUp 0.6s ease 0.4s forwards;
-    }
-
-    .output-preview-inner {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: var(--shadow-lg);
-    }
-
-    .output-preview-header {
-      padding: 16px 24px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--surface);
-    }
-
-    .output-preview-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: var(--accent);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
-
-    .output-preview-tag::before {
-      content: '';
-      width: 6px; height: 6px;
-      background: var(--accent);
-      border-radius: 50%;
-      animation: pulse 2s ease infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-
-    .output-preview-caption {
-      font-size: 0.78rem;
-      color: var(--ink-muted);
-      font-style: italic;
-    }
-
-    .output-preview-img {
-      width: 100%;
-      display: block;
-    }
-
-    /* ── SAMPLE GUIDE SECTION ── */
-    .sample-section {
-      padding: 80px 0;
-      border-top: 1px solid var(--border);
-      opacity: 0;
-      animation: fadeUp 0.6s ease 0.45s forwards;
-    }
-
-    .sample-inner {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 64px;
-      align-items: center;
-    }
-
-    @media (max-width: 768px) {
-      .sample-inner { grid-template-columns: 1fr; gap: 32px; }
-    }
-
-    .sample-left {}
-
-    .sample-left h2 {
-      font-family: 'Instrument Serif', serif;
-      font-size: clamp(1.8rem, 3vw, 2.4rem);
-      letter-spacing: -0.03em;
-      color: var(--ink);
-      margin-bottom: 14px;
-      line-height: 1.15;
-    }
-
-    .sample-left h2 em { font-style: italic; color: var(--accent); }
-
-    .sample-left p {
-      font-size: 0.97rem;
-      color: var(--ink-soft);
-      font-weight: 300;
-      line-height: 1.75;
-      margin-bottom: 12px;
-    }
-
-    .sample-left p strong { color: var(--ink); font-weight: 600; }
-
-    .sample-prompt {
-      display: inline-block;
-      margin: 16px 0 24px;
-      padding: 12px 16px;
-      background: var(--accent-lt);
-      border: 1px solid rgba(26,107,74,0.2);
-      border-radius: 8px;
-      font-size: 0.88rem;
-      color: var(--accent);
-      font-style: italic;
-      line-height: 1.5;
-    }
-
-    .sample-prompt span {
-      display: block;
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--ink-muted);
-      font-style: normal;
-      margin-bottom: 4px;
-    }
-
-    .btn-sample {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 12px 22px;
-      background: var(--white);
-      border: 1.5px solid var(--accent);
-      border-radius: var(--radius);
-      color: var(--accent);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.88rem;
-      font-weight: 600;
-      text-decoration: none;
-      transition: background 0.2s, color 0.2s;
-    }
-
-    .btn-sample:hover { background: var(--accent); color: white; }
-
-    .sample-right {
-      position: relative;
-    }
-
-
-    .sample-what {
-      margin-bottom: 20px;
-      padding: 18px 20px;
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-    }
-
-    .sample-what-label {
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: var(--ink-muted);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-
-    .sample-what-items {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .sample-what-items span {
-      font-size: 0.8rem;
-      color: var(--ink-soft);
-      background: var(--accent-lt);
-      border: 1px solid rgba(26,107,74,0.15);
-      border-radius: 100px;
-      padding: 4px 12px;
-      font-weight: 500;
-    }
-
-    .sample-judge {
-      font-family: 'Instrument Serif', serif;
-      font-size: 1.6rem;
-      letter-spacing: -0.02em;
-      color: var(--ink);
-      margin-bottom: 8px;
-      line-height: 1.2;
-    }
-
-    .sample-sub {
-      font-size: 0.95rem;
-      color: var(--ink-soft);
-      font-weight: 300;
-      line-height: 1.6;
-      margin-bottom: 20px;
-    }
-
-    .sample-pages {
-      position: relative;
-      height: 340px;
-    }
-
-    .sample-page {
-      position: absolute;
-      width: 88%;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      box-shadow: 0 4px 24px rgba(13,15,18,0.10);
-      overflow: hidden;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .sample-page img { width: 100%; display: block; }
-
-    .sample-page:nth-child(1) { top: 0;    left: 0;   z-index: 3; transform: rotate(-1deg); }
-    .sample-page:nth-child(2) { top: 20px; left: 24px; z-index: 2; transform: rotate(1.5deg); }
-    .sample-page:nth-child(3) { top: 40px; left: 46px; z-index: 1; transform: rotate(3deg); }
-
-    .sample-pages:hover .sample-page:nth-child(1) { transform: rotate(0deg) translateY(-4px); box-shadow: 0 12px 40px rgba(13,15,18,0.15); }
-    .sample-pages:hover .sample-page:nth-child(2) { transform: rotate(0deg) translate(20px, 10px); }
-    .sample-pages:hover .sample-page:nth-child(3) { transform: rotate(0deg) translate(40px, 20px); }
-
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes spin   { to { transform: rotate(360deg); } }
-  </style>
-</head>
-<body>
-<div class="page">
-
-  <!-- NAV -->
-  <nav>
-    <a href="https://teamsyncai.com" class="logo">
-      <img src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/teamsyncai_logo.png" alt="TeamSyncAI">
-    </a>
-    <span class="nav-badge">Free beta — No credit card</span>
-  </nav>
-
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-left">
-      <h1>Before you interview<br>candidates, <em>build<br>the interview.</em></h1>
-      <p class="hero-proof" style="margin-bottom:24px;">
-        Generate a structured hiring blueprint for your open role before you start interviewing.
-      </p>
-      <div class="micro-trust">
-        About 5 minutes <span>·</span> Free beta <span>·</span> No credit card
-      </div>
-    </div>
-
-    <!-- FORM -->
-    <div class="form-card">
-      <div class="form-title">Generate your interview blueprint</div>
-      <div class="form-subtitle">Add your role. Answer a few questions. Your blueprint is ready in minutes — free.</div>
-
-      <div class="success-panel" id="success-panel">
-        <div class="success-icon">
-          <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-        </div>
-        <h3>You're in.</h3>
-        <p>Taking you to TeamSyncAI now — your interview blueprint will be ready once you add your role.</p>
-        <a href="#" class="btn-secondary" id="redirect-btn">Open TeamSyncAI →</a>
-      </div>
-
-      <div class="form-fields" id="form-fields">
-        <div class="global-error" id="global-error"></div>
-        <form id="lead-form" novalidate>
-          <input type="text" name="website" id="hp-website" style="display:none" tabindex="-1" autocomplete="off" />
-
-          <div class="field-group" id="fg-name">
-            <label for="name">First name</label>
-            <input type="text" id="name" name="name" placeholder="Alex Johnson" autocomplete="name" />
-            <div class="error-msg">Please enter your name</div>
-          </div>
-
-          <div class="field-group" id="fg-email">
-            <label for="email">Work email <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-muted);font-size:0.72rem;">(where we'll send your blueprint)</span></label>
-            <input type="email" id="email" name="email" placeholder="alex@company.com" autocomplete="email" />
-            <div class="error-msg">Please enter a valid email</div>
-            <div class="email-exists-box" id="email-exists-box">
-              This email already has an account. &nbsp;<a href="https://app.teamsyncai.com/sign-in">Sign in instead →</a>
-            </div>
-          </div>
-
-          <div class="legal-section">
-            <div class="legal-row">
-              <input type="checkbox" id="chk-terms" name="terms" />
-              <label for="chk-terms" class="legal-label">
-                I agree to the <a href="https://teamsyncai.com/legal/terms" target="_blank">Terms and Conditions</a>
-              </label>
-            </div>
-            <div class="legal-row">
-              <input type="checkbox" id="chk-privacy" name="privacy" />
-              <label for="chk-privacy" class="legal-label">
-                I agree to the <a href="https://teamsyncai.com/legal/privacy" target="_blank">Privacy Policy</a>
-              </label>
-            </div>
-          </div>
-
-          <div class="turnstile-wrap">
-            <div class="turnstile-lbl">Please verify you're human</div>
-            <div id="ts-loading" class="ts-loading">
-              <div style="width:16px;height:16px;border:2px solid rgba(26,107,74,0.2);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0;"></div>
-              Loading verification…
-            </div>
-            <div id="ts-error" class="ts-error"></div>
-            <button type="button" id="ts-retry" class="retry-btn" onclick="retryTurnstile()">↻ Retry verification</button>
-            <div id="turnstile-container" style="display:flex;justify-content:center;min-height:65px;"></div>
-          </div>
-
-          <button type="submit" class="btn-primary" id="submit-btn" disabled>
-            <span class="btn-text">Generate Blueprint for My Role — Free →</span>
-            <span class="btn-loader"><span class="spinner"></span></span>
-          </button>
-        </form>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- IMMEDIATE OUTPUT -->
-  <section class="output-preview">
-    <div class="output-preview-inner">
-      <div class="output-preview-header">
-        <div class="output-preview-tag">Example Output</div>
-        <div class="output-preview-caption">Interview questions generated for an SDR role — AI-built, linked to evaluation goals</div>
-      </div>
-      <img
-        src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/hiring-guide-26-03/app-screenshot-preview-interview-questions.png"
-        alt="Example interview questions generated by TeamSyncAI — showing main question, linked evaluation goal, and follow-up probes"
-        class="output-preview-img"
-        loading="eager"
-      >
-    </div>
-  </section>
-
-
-  <!-- CURIOSITY BRIDGE -->
-  <div class="curiosity-bridge">
-    <p>Interview questions are just one part.<br><em>Here is everything the blueprint generates.</em></p>
-    <span class="curiosity-arrow">↓</span>
-  </div>
-
-  <hr class="section-divider">
-
-  <!-- WHAT YOU GET -->
-  <section class="output-section">
-    <div class="section-label">What you'll receive</div>
-    <h2>For your open role,<br><em>we generate all of this.</em></h2>
-    <p class="output-intro">Not a template. Not a checklist. A complete AI-built hiring system calibrated to your exact role, team, and how success actually looks for you.</p>
-
-    <div class="output-grid">
-      <div class="output-item">
-        <div class="output-check"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-        <div class="output-text"><strong>Role Complexity Analysis</strong>Autonomy level, decision scope, and leadership expectations — defined before you write a single question.</div>
-      </div>
-      <div class="output-item">
-        <div class="output-check"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-        <div class="output-text"><strong>30/60/90 Day Success Indicators</strong>Concrete outcomes that define what a good hire looks like — before you start interviewing.</div>
-      </div>
-      <div class="output-item">
-        <div class="output-check"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-        <div class="output-text"><strong>Failure Risk Signals</strong>The patterns that predict a bad hire for this specific role — so you know what to watch for.</div>
-      </div>
-      <div class="output-item">
-        <div class="output-check"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-        <div class="output-text"><strong>Weighted Evaluation Goals</strong>What matters most for this hire, ranked and weighted — so every candidate gets a fair, consistent review.</div>
-      </div>
-      <div class="output-item">
-        <div class="output-check"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-        <div class="output-text"><strong>Behavioural Interview Questions</strong>Mapped to your evaluation goals — not generic questions copied from a blog post.</div>
-      </div>
-      <div class="output-item">
-        <div class="output-check"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-        <div class="output-text"><strong>Follow-Up Probes</strong>What to ask when answers get vague — so you never leave an interview wondering what just happened.</div>
-      </div>
-      <div class="output-item">
-        <div class="output-check"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-        <div class="output-text"><strong>Must-Have vs. Nice-to-Have</strong>Clearly separated — so you stop rejecting good candidates for the wrong reasons.</div>
-      </div>
-      <div class="output-item">
-        <div class="output-check"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-        <div class="output-text"><strong>Post-Hire Check-In Questions</strong>Automated at 30, 60, and 90 days — tied to the goals you set, so you know if the hire is working.</div>
-      </div>
-      <div class="output-item">
-        <div class="output-check"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-        <div class="output-text"><strong>A Ready-to-Use Interview Framework</strong>Everything above, structured into a 15-minute async interview you can run immediately.</div>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- HOW IT WORKS -->
-  <section class="how-section">
-    <div class="section-label">How it works</div>
-    <h2>Three steps.<br><em>One hiring system.</em></h2>
-    <p class="how-intro">Most hiring tools give you a template and wish you luck. TeamSyncAI builds a system around your specific role — then keeps working after the hire.</p>
-
-    <div class="steps">
-
-      <div class="step">
-        <div class="step-num">1</div>
-        <div>
-          <div class="step-tag">Before the interview</div>
-          <div class="step-title">We calibrate the role with AI.</div>
-          <div class="step-body">
-            <p>We start by asking you the questions most hiring managers have never been asked. What does success look like at 90 days — specifically? What kind of person always fails in this role? How much autonomy does this role actually require in the first 30 days?</p>
-            <p><strong>Your answers train the AI on your exact hire.</strong> Not on a job title. Not on an industry average. On the specific reality of your team and this role.</p>
-          </div>
-          <img src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/hiring-guide-26-03/app-screenshot-job-input.png" alt="Add your role in TeamSyncAI" class="screenshot" loading="lazy">
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-num">2</div>
-        <div>
-          <div class="step-tag">During the interview</div>
-          <div class="step-title">AI builds your complete interview system.</div>
-          <div class="step-body">
-            <p>From your calibration answers, the AI generates weighted evaluation goals, behavioural interview questions mapped to outcomes, and follow-up probes for when answers get vague.</p>
-            <p><strong>Every candidate gets evaluated the same way.</strong> Not based on who had a better Tuesday. Not on gut feel. On criteria you defined before the first resume came in.</p>
-          </div>
-          <img src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/hiring-guide-26-03/app-screenshot-generate-calibration.png" alt="Calibration complete — interview questions ready" class="screenshot" loading="lazy">
-          <img src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/hiring-guide-26-03/app-screenshot-probing-questions.png" alt="AI-generated interview question with linked goal and follow-up probes" class="screenshot" loading="lazy" style="margin-top:12px;">
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-num">3</div>
-        <div>
-          <div class="step-tag">After the hire</div>
-          <div class="step-title">AI tells you if you were right.</div>
-          <div class="step-body">
-            <p>Most hiring tools stop at the offer letter. TeamSyncAI sends you check-in questions at 30, 60, and 90 days — tied to the exact success indicators you defined at the start.</p>
-            <p><strong>Over time, the AI learns what good hiring looks like for your team specifically.</strong> Every hire you make improves the next one.</p>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- SAMPLE GUIDE -->
-  <section class="sample-section">
-    <div class="sample-inner">
-      <div class="sample-left">
-        <div class="section-label">Real example</div>
-        <div class="sample-what">
-          <div class="sample-what-label">What the Blueprint Generates</div>
-          <div class="sample-what-items">
-            <span>Role success definition</span>
-            <span>Success &amp; failure signals</span>
-            <span>Structured interview questions</span>
-            <span>Evaluation rubric</span>
-            <span>30/60/90-day performance indicators</span>
-          </div>
-        </div>
-        <div class="sample-prompt">
-          <span>Input used for this example</span>
-          "Looking for a hungry SDR, 1-2 years experience, B2B SaaS."
-        </div>
-        <p class="sample-judge">Judge it by the output.</p>
-        <p class="sample-sub">Generate a hiring blueprint for your open role and evaluate it yourself.</p>
-        <a href="#" class="btn-primary" style="display:inline-flex;align-items:center;gap:8px;width:auto;padding:13px 22px;margin-top:0;text-decoration:none;font-size:0.9rem;" onclick="document.getElementById('name').scrollIntoView({behavior:'smooth'}); document.getElementById('name').focus(); return false;">
-          Generate Blueprint for My Role →
-        </a>
-        <div style="margin-top:10px;font-size:0.78rem;color:var(--ink-muted);">About 5 minutes · No credit card</div>
-        <a href="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/hiring-guide-26-03/sample-hiring-guide.pdf" target="_blank" class="btn-sample" style="margin-top:14px;">
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-          See the full SDR example →
-        </a>
-      </div>
-      <div class="sample-right">
-        <div class="sample-pages">
-          <div class="sample-page">
-            <img src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/hiring-guide-26-03/app-screenshot-probing-questions.png" alt="Interview question preview" loading="lazy">
-          </div>
-          <div class="sample-page">
-            <img src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/hiring-guide-26-03/app-screenshot-generate-calibration.png" alt="Calibration complete" loading="lazy">
-          </div>
-          <div class="sample-page">
-            <img src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/hiring-guide-26-03/app-screenshot-job-input.png" alt="Job details form" loading="lazy">
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FAQ -->
-  <section class="faq-section">
-    <h2>Questions you're probably thinking.</h2>
-    <div class="faq-list">
-
-      <div class="faq-item">
-        <button class="faq-question" onclick="toggleFaq(this)">
-          Is this actually free?
-          <div class="faq-icon"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
-        </button>
-        <div class="faq-answer">
-          <div class="faq-answer-inner">Yes — generating your interview blueprint and running your first hiring cycle is completely free. No credit card, no trial expiry, no sales call. We're in beta and want you to use it on a real role so we can learn what works.</div>
-        </div>
-      </div>
-
-      <div class="faq-item">
-        <button class="faq-question" onclick="toggleFaq(this)">
-          Do I need to replace how we currently hire?
-          <div class="faq-icon"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
-        </button>
-        <div class="faq-answer">
-          <div class="faq-answer-inner">No. TeamSyncAI is additive — it works alongside whatever you're already doing. Use the blueprint in your existing process. Run the async interviews or don't. The calibration and questions are valuable on their own, even if you never change anything else.</div>
-        </div>
-      </div>
-
-      <div class="faq-item">
-        <button class="faq-question" onclick="toggleFaq(this)">
-          What if I don't have a formal job description?
-          <div class="faq-icon"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
-        </button>
-        <div class="faq-answer">
-          <div class="faq-answer-inner">That's fine — and honestly pretty common. A rough description works. Something like "looking for a hungry SDR, 1-2 years B2B SaaS experience" is enough to get started. The calibration questions we ask you will fill in the gaps the AI needs.</div>
-        </div>
-      </div>
-
-      <div class="faq-item">
-        <button class="faq-question" onclick="toggleFaq(this)">
-          How is this different from a template or a ChatGPT prompt?
-          <div class="faq-icon"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
-        </button>
-        <div class="faq-answer">
-          <div class="faq-answer-inner">Templates and prompts give you generic output. TeamSyncAI calibrates to <strong>your specific answers</strong> — what success looks like on your team, what failure looks like, how much autonomy this role really needs. The questions it generates are mapped to evaluation goals weighted by what you told us actually matters. That's not something a template can do.</div>
-        </div>
-      </div>
-
-      <div class="faq-item">
-        <button class="faq-question" onclick="toggleFaq(this)">
-          Who sees my data?
-          <div class="faq-icon"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
-        </button>
-        <div class="faq-answer">
-          <div class="faq-answer-inner">Your data is yours. We don't sell it, share it between customers, or use it for advertising. Your hiring data and candidate responses are private to your account. Full details in our <a href="https://teamsyncai.com/legal/privacy" target="_blank">Privacy Policy</a>.</div>
-        </div>
-      </div>
-
-      <div class="faq-item">
-        <button class="faq-question" onclick="toggleFaq(this)">
-          We already use a recruiter. Is this still useful?
-          <div class="faq-icon"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
-        </button>
-        <div class="faq-answer">
-          <div class="faq-answer-inner">Yes — recruiters find candidates. TeamSyncAI helps you evaluate them. The calibration, interview questions, and post-hire check-ins are things most recruiters don't provide. They're complementary, not competing.</div>
-        </div>
-      </div>
-
-
-      <div class="faq-item">
-        <button class="faq-question" onclick="toggleFaq(this)">
-          Why are you giving this away for free?
-          <div class="faq-icon"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
-        </button>
-        <div class="faq-answer">
-          <div class="faq-answer-inner">We're launching TeamSyncAI and looking for hiring teams willing to use the system on a real role and give us feedback. You get a genuinely useful hiring blueprint. We get to learn what works. That's the deal — no hidden catch, no aggressive upsell.</div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- BOTTOM CTA -->
-  <section class="bottom-cta">
-    <h2>Your next hire deserves<br>a <em>better process.</em></h2>
-    <p>Generate your AI interview blueprint for free.<br>No credit card. No sales call. Use it in your current hiring cycle.</p>
-    <a href="#" class="btn-cta" onclick="document.getElementById('name').scrollIntoView({behavior:'smooth'}); document.getElementById('name').focus(); return false;">
-      Generate Blueprint for My Role — Free
-    </a>
-    <div class="bottom-microtrust">Free beta · Takes under 5 minutes · Built for your exact role</div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-left">© 2025 TeamSyncAI · Halifax, NS</div>
-    <div class="footer-right">
-      <a href="https://teamsyncai.com/legal/privacy" target="_blank">Privacy Policy</a> &nbsp;·&nbsp;
-      <a href="https://teamsyncai.com/legal/terms" target="_blank">Terms</a>
-    </div>
-  </footer>
-
-</div>
-
-<script>
-  // ── CONFIG ────────────────────────────────────────────────────────────
-  const TURNSTILE_SITE_KEY = '0x4AAAAAAA6GdaAB-8aAzYLn';
-  const AUTH_API           = 'https://auth-api.teamsyncai.com/api/auth';
-  // APP_COMPLETE_URL removed — redirecting directly to appExchangePage
-  // ─────────────────────────────────────────────────────────────────────
-
-  const params      = new URLSearchParams(window.location.search);
-  const utmSource   = params.get('utm_source')   || '';
-  const utmCampaign = params.get('utm_campaign') || '';
-  const refEmail    = params.get('ref')          || '';
-
-  if (refEmail) {
-    const el = document.getElementById('email');
-    el.value = decodeURIComponent(refEmail);
-    setTimeout(() => {
-      emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(el.value.trim());
-      if (emailIsValid) checkEmailExists(el.value.trim());
-      updateSubmitState();
-    }, 300);
-  }
-
-  let turnstileToken    = '';
-  let turnstileWidgetId = null;
-
-  function initTurnstile() {
-    if (!window.turnstile) { setTimeout(initTurnstile, 150); return; }
-    document.getElementById('ts-loading').style.display = 'none';
-    try {
-      turnstileWidgetId = window.turnstile.render('#turnstile-container', {
-        sitekey: TURNSTILE_SITE_KEY,
-        theme: 'light',
-        callback: (token) => {
-          turnstileToken = token;
-          document.getElementById('ts-error').style.display = 'none';
-          document.getElementById('ts-retry').style.display = 'none';
-          updateSubmitState();
-        },
-        'error-callback':   () => { turnstileToken = ''; showTsError('Verification failed. Please retry.'); updateSubmitState(); },
-        'expired-callback': () => { turnstileToken = ''; updateSubmitState(); },
-        'timeout-callback': () => { turnstileToken = ''; showTsError('Verification timed out. Please retry.'); updateSubmitState(); },
-      });
-    } catch(e) {
-      showTsError('Failed to load verification. Try refreshing the page.');
-    }
-  }
-
-  function showTsError(msg) {
-    const el = document.getElementById('ts-error');
-    el.textContent = msg;
-    el.style.display = 'block';
-    document.getElementById('ts-retry').style.display = 'block';
-  }
-
-  function retryTurnstile() {
-    document.getElementById('ts-error').style.display = 'none';
-    document.getElementById('ts-retry').style.display = 'none';
-    document.getElementById('ts-loading').style.display = 'flex';
-    turnstileToken = '';
-    if (turnstileWidgetId !== null && window.turnstile) {
-      try { window.turnstile.reset(turnstileWidgetId); } catch(e) {}
-    }
-    document.getElementById('ts-loading').style.display = 'none';
-    updateSubmitState();
-  }
-
-  setTimeout(initTurnstile, 300);
-
-  let emailCheckTimer = null;
-  let emailIsValid    = false;
-  let emailExists     = false;
-
-  async function checkEmailExists(email) {
-    try {
-      const res  = await fetch(`${AUTH_API}/check-email`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email })
-      });
-      if (!res.ok) return;
-      const data = await res.json();
-      emailExists = !!data.exists;
-      document.getElementById('email-exists-box').classList.toggle('visible', emailExists);
-      if (emailExists) document.getElementById('fg-email').classList.remove('has-error');
-      updateSubmitState();
-    } catch(e) {}
-  }
-
-  document.getElementById('email').addEventListener('input', function() {
-    const email  = this.value.trim();
-    const re     = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-    emailIsValid = re.test(email);
-    emailExists  = false;
-    document.getElementById('email-exists-box').classList.remove('visible');
-    document.getElementById('fg-email').classList.remove('has-error');
-    clearTimeout(emailCheckTimer);
-    if (emailIsValid) emailCheckTimer = setTimeout(() => checkEmailExists(email), 500);
-    updateSubmitState();
-  });
-
-  function updateSubmitState() {
-    const name    = document.getElementById('name').value.trim();
-    const terms   = document.getElementById('chk-terms').checked;
-    const privacy = document.getElementById('chk-privacy').checked;
-    document.getElementById('submit-btn').disabled =
-      !(name && emailIsValid && !emailExists && terms && privacy && turnstileToken);
-  }
-
-  document.getElementById('name').addEventListener('input', updateSubmitState);
-  ['chk-terms','chk-privacy'].forEach(id => document.getElementById(id).addEventListener('change', updateSubmitState));
-
-  function setFieldError(groupId, show) {
-    document.getElementById(groupId).classList.toggle('has-error', show);
-  }
-
-  function showGlobalError(msg) {
-    const el = document.getElementById('global-error');
-    el.textContent = msg;
-    el.classList.add('visible');
-  }
-
-  function hideGlobalError() {
-    document.getElementById('global-error').classList.remove('visible');
-  }
-
-  // FAQ toggle
-  function toggleFaq(btn) {
-    const item = btn.closest('.faq-item');
-    const isOpen = item.classList.contains('open');
-    document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
-    if (!isOpen) item.classList.add('open');
-  }
-
-  document.getElementById('lead-form').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    hideGlobalError();
-
-    if (document.getElementById('hp-website').value) return;
-
-    const name    = document.getElementById('name').value.trim();
-    const email   = document.getElementById('email').value.trim();
-    const terms   = document.getElementById('chk-terms').checked;
-    const privacy = document.getElementById('chk-privacy').checked;
-
-    let valid = true;
-    if (!name)         { setFieldError('fg-name', true);  valid = false; }
-    if (!emailIsValid) { setFieldError('fg-email', true); valid = false; }
-    if (!terms || !privacy) { showGlobalError('Please agree to the Terms and Privacy Policy to continue.'); valid = false; }
-    if (!turnstileToken)    { showGlobalError('Please complete the human verification above.');              valid = false; }
-    if (!valid) return;
-
-    const btn = document.getElementById('submit-btn');
-    btn.classList.add('loading');
-
-    const payload = {
-      name,
-      email,
-      legal: {
-        terms_conditions: terms   ? 'accepted' : '',
-        privacy:          privacy ? 'accepted' : '',
-        name,
-      },
-      legalAcceptance: { name, terms, privacy },
-      plan_intent:     { is_trial: true },
-      turnstileToken,
-      source: {
-        utm_source:   utmSource,
-        utm_campaign: utmCampaign,
-        ref_email:    refEmail,
-        page:         window.location.href,
-        submitted_at: new Date().toISOString(),
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-E10WDE2RD4"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
       }
-    };
+      gtag("js", new Date());
 
-    try {
-      const controller = new AbortController();
-      const timeout    = setTimeout(() => controller.abort(), 10000);
+      gtag("config", "G-E10WDE2RD4");
+    </script>
+    <title>TeamSyncAI — AI-Powered Hiring System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+      async
+      defer
+    ></script>
+    <style>
+      :root {
+        --ink: #0d0f12;
+        --ink-soft: #4a5060;
+        --ink-muted: #8a91a0;
+        --surface: #f9f8f6;
+        --white: #ffffff;
+        --accent: #1a6b4a;
+        --accent-lt: #e8f4ef;
+        --accent-glow: rgba(26, 107, 74, 0.12);
+        --border: #e3e1dc;
+        --radius: 12px;
+        --shadow: 0 2px 16px rgba(13, 15, 18, 0.08);
+        --shadow-lg: 0 8px 40px rgba(13, 15, 18, 0.13);
+      }
 
-      const res = await fetch(`${AUTH_API}/website-register`, {
-        method:      'POST',
-        headers:     { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body:        JSON.stringify(payload),
-        signal:      controller.signal,
-      });
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
 
-      clearTimeout(timeout);
-      const data = await res.json();
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--surface);
+        color: var(--ink);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
 
-      if (!res.ok) {
-        if (res.status === 409 || (data.error && data.error.toLowerCase().includes('email'))) {
-          emailExists = true;
-          document.getElementById('email-exists-box').classList.add('visible');
-          btn.classList.remove('loading');
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background:
+          radial-gradient(
+            ellipse 80% 50% at 60% -10%,
+            rgba(26, 107, 74, 0.07) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse 60% 40% at -10% 80%,
+            rgba(26, 107, 74, 0.05) 0%,
+            transparent 50%
+          );
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .page {
+        position: relative;
+        z-index: 1;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      /* ── NAV ── */
+      nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 24px 0 0;
+        opacity: 0;
+        animation: fadeUp 0.5s ease 0.1s forwards;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+      }
+      .logo img {
+        height: 60px;
+        width: auto;
+      }
+      .logo-text {
+        font-family: "Instrument Serif", serif;
+        font-size: 1.25rem;
+        color: var(--ink);
+        letter-spacing: -0.02em;
+      }
+      .logo-text span {
+        color: var(--accent);
+      }
+
+      .nav-badge {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--accent);
+        background: var(--accent-lt);
+        border: 1px solid rgba(26, 107, 74, 0.2);
+        padding: 4px 12px;
+        border-radius: 100px;
+      }
+
+      /* ── HERO ── */
+      .hero {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 64px;
+        align-items: center;
+        padding: 72px 0 80px;
+      }
+
+      @media (max-width: 768px) {
+        .hero {
+          grid-template-columns: 1fr;
+          gap: 48px;
+          padding: 48px 0 56px;
+        }
+      }
+
+      .hero-left {
+        opacity: 0;
+        animation: fadeUp 0.6s ease 0.2s forwards;
+      }
+
+      h1 {
+        font-family: "Instrument Serif", serif;
+        font-size: clamp(2.2rem, 4vw, 3.2rem);
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+        color: var(--ink);
+        margin-bottom: 20px;
+      }
+
+      h1 em {
+        font-style: italic;
+        color: var(--accent);
+      }
+
+      .hero-proof {
+        font-size: 1rem;
+        line-height: 1.75;
+        color: var(--ink-soft);
+        font-weight: 300;
+        max-width: 460px;
+        margin-bottom: 16px;
+      }
+
+      .hero-proof strong {
+        color: var(--ink);
+        font-weight: 600;
+      }
+
+      .micro-trust {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.8rem;
+        color: var(--ink-muted);
+        margin-bottom: 32px;
+        font-weight: 400;
+      }
+
+      .micro-trust span {
+        color: var(--border);
+      }
+
+      /* ── FORM CARD ── */
+      .form-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 40px 36px;
+        box-shadow: var(--shadow-lg);
+        opacity: 0;
+        animation: fadeUp 0.6s ease 0.35s forwards;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .form-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--accent), #2dd4a0);
+      }
+
+      .form-title {
+        font-family: "Instrument Serif", serif;
+        font-size: 1.4rem;
+        letter-spacing: -0.02em;
+        margin-bottom: 6px;
+      }
+      .form-subtitle {
+        font-size: 0.85rem;
+        color: var(--ink-muted);
+        margin-bottom: 24px;
+        line-height: 1.55;
+      }
+
+      .field-group {
+        margin-bottom: 14px;
+      }
+
+      label {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--ink-soft);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin-bottom: 7px;
+      }
+
+      input[type="text"],
+      input[type="email"] {
+        width: 100%;
+        padding: 11px 14px;
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius);
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.93rem;
+        color: var(--ink);
+        background: var(--surface);
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+        outline: none;
+      }
+
+      input[type="text"]::placeholder,
+      input[type="email"]::placeholder {
+        color: var(--ink-muted);
+      }
+
+      input[type="text"]:focus,
+      input[type="email"]:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-glow);
+        background: var(--white);
+      }
+
+      .field-group.has-error input {
+        border-color: #e74c3c;
+      }
+      .error-msg {
+        font-size: 0.75rem;
+        color: #c0392b;
+        margin-top: 5px;
+        display: none;
+      }
+      .field-group.has-error .error-msg {
+        display: block;
+      }
+
+      .email-exists-box {
+        display: none;
+        margin-top: 8px;
+        padding: 10px 12px;
+        background: #fefce8;
+        border: 1px solid #fde68a;
+        border-radius: 8px;
+        font-size: 0.78rem;
+        color: #92400e;
+        line-height: 1.55;
+      }
+      .email-exists-box.visible {
+        display: block;
+      }
+      .email-exists-box a {
+        color: var(--accent);
+        font-weight: 600;
+        text-decoration: underline;
+      }
+
+      .legal-section {
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .legal-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+      }
+
+      .legal-row input[type="checkbox"] {
+        width: 15px;
+        height: 15px;
+        min-width: 15px;
+        margin-top: 2px;
+        accent-color: var(--accent);
+        cursor: pointer;
+        padding: 0;
+      }
+
+      .legal-label {
+        font-size: 0.77rem;
+        color: var(--ink-soft);
+        line-height: 1.5;
+        cursor: pointer;
+        text-transform: none;
+        font-weight: 400;
+        letter-spacing: 0;
+      }
+      .legal-label a {
+        color: var(--accent);
+        text-decoration: underline;
+      }
+
+      .turnstile-wrap {
+        margin-top: 14px;
+        padding: 12px 14px;
+        background: #f0f7f4;
+        border: 1px solid rgba(26, 107, 74, 0.15);
+        border-radius: var(--radius);
+      }
+
+      .turnstile-lbl {
+        font-size: 0.75rem;
+        color: var(--ink-soft);
+        margin-bottom: 10px;
+        font-weight: 500;
+      }
+
+      .ts-loading {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.78rem;
+        color: var(--ink-muted);
+        padding: 6px 0;
+      }
+
+      .ts-error {
+        font-size: 0.75rem;
+        color: #c0392b;
+        margin-bottom: 6px;
+        display: none;
+      }
+      .retry-btn {
+        background: none;
+        border: none;
+        color: var(--accent);
+        font-size: 0.75rem;
+        cursor: pointer;
+        padding: 0;
+        text-decoration: underline;
+        font-family: "DM Sans", sans-serif;
+        display: none;
+        margin-top: 4px;
+      }
+
+      .global-error {
+        display: none;
+        padding: 10px 14px;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        color: #b91c1c;
+        margin-bottom: 12px;
+        line-height: 1.5;
+      }
+      .global-error.visible {
+        display: block;
+      }
+
+      .btn-primary {
+        width: 100%;
+        padding: 14px;
+        background: var(--accent);
+        color: white;
+        border: none;
+        border-radius: var(--radius);
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 14px;
+        transition:
+          background 0.2s,
+          transform 0.15s,
+          box-shadow 0.2s,
+          opacity 0.2s;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        background: #155c3e;
+        box-shadow: 0 4px 20px rgba(26, 107, 74, 0.3);
+        transform: translateY(-1px);
+      }
+      .btn-primary:active:not(:disabled) {
+        transform: translateY(0);
+      }
+      .btn-primary:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      .btn-primary.loading {
+        pointer-events: none;
+      }
+      .btn-primary .btn-text {
+        transition: opacity 0.2s;
+      }
+      .btn-primary .btn-loader {
+        display: none;
+        position: absolute;
+        inset: 0;
+        align-items: center;
+        justify-content: center;
+      }
+      .btn-primary.loading .btn-text {
+        opacity: 0;
+      }
+      .btn-primary.loading .btn-loader {
+        display: flex;
+      }
+
+      .spinner {
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+      }
+
+      .success-panel {
+        display: none;
+        text-align: center;
+        padding: 16px 0;
+      }
+      .success-panel.visible {
+        display: block;
+      }
+      .form-fields.hidden {
+        display: none;
+      }
+
+      .success-icon {
+        width: 56px;
+        height: 56px;
+        background: var(--accent-lt);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+      }
+      .success-icon svg {
+        width: 26px;
+        height: 26px;
+        stroke: var(--accent);
+      }
+      .success-panel h3 {
+        font-family: "Instrument Serif", serif;
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+      }
+      .success-panel p {
+        font-size: 0.88rem;
+        color: var(--ink-soft);
+        margin-bottom: 20px;
+        line-height: 1.6;
+      }
+
+      .btn-secondary {
+        display: inline-block;
+        padding: 11px 28px;
+        background: var(--accent);
+        color: white;
+        border-radius: var(--radius);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: background 0.2s;
+      }
+      .btn-secondary:hover {
+        background: #155c3e;
+      }
+
+      /* ── DIVIDER ── */
+      .section-divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 0;
+      }
+
+      /* ── WHAT YOU GET ── */
+      .output-section {
+        padding: 80px 0;
+        opacity: 0;
+        animation: fadeUp 0.6s ease 0.4s forwards;
+      }
+
+      .section-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--accent);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+      }
+
+      .output-section h2 {
+        font-family: "Instrument Serif", serif;
+        font-size: clamp(1.8rem, 3vw, 2.4rem);
+        letter-spacing: -0.03em;
+        color: var(--ink);
+        margin-bottom: 12px;
+        line-height: 1.15;
+      }
+
+      .output-section h2 em {
+        font-style: italic;
+        color: var(--accent);
+      }
+
+      .output-intro {
+        font-size: 1rem;
+        color: var(--ink-soft);
+        font-weight: 300;
+        max-width: 540px;
+        line-height: 1.7;
+        margin-bottom: 48px;
+      }
+
+      .output-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+
+      @media (max-width: 768px) {
+        .output-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media (max-width: 480px) {
+        .output-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .output-item {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px 22px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        transition:
+          box-shadow 0.2s,
+          transform 0.2s;
+      }
+
+      .output-item:hover {
+        box-shadow: var(--shadow);
+        transform: translateY(-2px);
+      }
+
+      .output-check {
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
+        background: var(--accent-lt);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 1px;
+      }
+
+      .output-check svg {
+        width: 10px;
+        height: 10px;
+        stroke: var(--accent);
+        stroke-width: 2.5;
+      }
+
+      .output-text {
+        font-size: 0.85rem;
+        color: var(--ink-soft);
+        line-height: 1.5;
+        font-weight: 400;
+      }
+
+      .output-text strong {
+        color: var(--ink);
+        font-weight: 600;
+        display: block;
+        margin-bottom: 2px;
+      }
+
+      /* ── HOW IT WORKS ── */
+      .how-section {
+        padding: 80px 0;
+        border-top: 1px solid var(--border);
+        opacity: 0;
+        animation: fadeUp 0.6s ease 0.45s forwards;
+      }
+
+      .how-section h2 {
+        font-family: "Instrument Serif", serif;
+        font-size: clamp(1.8rem, 3vw, 2.4rem);
+        letter-spacing: -0.03em;
+        color: var(--ink);
+        margin-bottom: 12px;
+        line-height: 1.15;
+      }
+
+      .how-section h2 em {
+        font-style: italic;
+        color: var(--accent);
+      }
+
+      .how-intro {
+        font-size: 1rem;
+        color: var(--ink-soft);
+        font-weight: 300;
+        max-width: 540px;
+        line-height: 1.7;
+        margin-bottom: 56px;
+      }
+
+      .steps {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .step {
+        display: grid;
+        grid-template-columns: 64px 1fr;
+        gap: 32px;
+        padding: 40px 0;
+        border-bottom: 1px solid var(--border);
+        align-items: start;
+      }
+
+      .step:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+
+      @media (max-width: 640px) {
+        .step {
+          grid-template-columns: 1fr;
+          gap: 14px;
+        }
+      }
+
+      .step-num {
+        width: 48px;
+        height: 48px;
+        background: var(--accent-lt);
+        border: 1.5px solid rgba(26, 107, 74, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Instrument Serif", serif;
+        font-size: 1.3rem;
+        color: var(--accent);
+        flex-shrink: 0;
+        margin-top: 4px;
+      }
+
+      .step-tag {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: var(--accent);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+
+      .step-title {
+        font-family: "Instrument Serif", serif;
+        font-size: clamp(1.2rem, 2vw, 1.6rem);
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin-bottom: 12px;
+        line-height: 1.2;
+      }
+
+      .step-body {
+        font-size: 0.95rem;
+        line-height: 1.75;
+        color: var(--ink-soft);
+        font-weight: 300;
+        max-width: 580px;
+      }
+
+      .step-body p + p {
+        margin-top: 12px;
+      }
+      .step-body strong {
+        color: var(--ink);
+        font-weight: 600;
+      }
+
+      /* ── FAQ ── */
+      .faq-section {
+        padding: 80px 0;
+        border-top: 1px solid var(--border);
+        opacity: 0;
+        animation: fadeUp 0.6s ease 0.5s forwards;
+      }
+
+      .faq-section h2 {
+        font-family: "Instrument Serif", serif;
+        font-size: clamp(1.8rem, 3vw, 2.4rem);
+        letter-spacing: -0.03em;
+        color: var(--ink);
+        margin-bottom: 48px;
+        line-height: 1.15;
+      }
+
+      .faq-list {
+        display: flex;
+        flex-direction: column;
+        max-width: 760px;
+      }
+
+      .faq-item {
+        border-bottom: 1px solid var(--border);
+        padding: 0;
+      }
+
+      .faq-item:first-child {
+        border-top: 1px solid var(--border);
+      }
+
+      .faq-question {
+        width: 100%;
+        background: none;
+        border: none;
+        text-align: left;
+        padding: 22px 0;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.97rem;
+        font-weight: 600;
+        color: var(--ink);
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        transition: color 0.2s;
+      }
+
+      .faq-question:hover {
+        color: var(--accent);
+      }
+
+      .faq-icon {
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
+        border: 1.5px solid var(--border);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          background 0.2s,
+          border-color 0.2s,
+          transform 0.2s;
+        flex-shrink: 0;
+      }
+
+      .faq-icon svg {
+        width: 8px;
+        height: 8px;
+        stroke: var(--ink-muted);
+        stroke-width: 2.5;
+        transition: transform 0.25s;
+      }
+
+      .faq-item.open .faq-icon {
+        background: var(--accent);
+        border-color: var(--accent);
+      }
+      .faq-item.open .faq-icon svg {
+        stroke: white;
+        transform: rotate(45deg);
+      }
+
+      .faq-answer {
+        max-height: 0;
+        overflow: hidden;
+        transition:
+          max-height 0.3s ease,
+          padding 0.3s ease;
+      }
+
+      .faq-item.open .faq-answer {
+        max-height: 400px;
+      }
+
+      .faq-answer-inner {
+        padding: 0 0 22px;
+        font-size: 0.9rem;
+        color: var(--ink-soft);
+        line-height: 1.75;
+        font-weight: 300;
+        max-width: 640px;
+      }
+
+      .faq-answer-inner strong {
+        color: var(--ink);
+        font-weight: 600;
+      }
+      .faq-answer-inner a {
+        color: var(--accent);
+        text-decoration: underline;
+      }
+
+      /* ── BOTTOM CTA ── */
+      .bottom-cta {
+        padding: 80px 0;
+        border-top: 1px solid var(--border);
+        text-align: center;
+        opacity: 0;
+        animation: fadeUp 0.6s ease 0.55s forwards;
+      }
+
+      .bottom-cta h2 {
+        font-family: "Instrument Serif", serif;
+        font-size: clamp(1.8rem, 3vw, 2.6rem);
+        letter-spacing: -0.03em;
+        color: var(--ink);
+        margin-bottom: 14px;
+        line-height: 1.15;
+      }
+
+      .bottom-cta h2 em {
+        font-style: italic;
+        color: var(--accent);
+      }
+
+      .bottom-cta p {
+        font-size: 1rem;
+        color: var(--ink-soft);
+        font-weight: 300;
+        margin-bottom: 32px;
+        line-height: 1.7;
+      }
+
+      .btn-cta {
+        display: inline-block;
+        padding: 16px 36px;
+        background: var(--accent);
+        color: white;
+        border-radius: var(--radius);
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: 600;
+        transition:
+          background 0.2s,
+          transform 0.15s,
+          box-shadow 0.2s;
+      }
+
+      .btn-cta:hover {
+        background: #155c3e;
+        box-shadow: 0 4px 20px rgba(26, 107, 74, 0.3);
+        transform: translateY(-1px);
+      }
+
+      .bottom-microtrust {
+        margin-top: 14px;
+        font-size: 0.78rem;
+        color: var(--ink-muted);
+      }
+
+      /* ── FOOTER ── */
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 24px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        opacity: 0;
+        animation: fadeUp 0.4s ease 0.6s forwards;
+      }
+      .footer-left {
+        font-size: 0.78rem;
+        color: var(--ink-muted);
+      }
+      .footer-right {
+        font-size: 0.78rem;
+        color: var(--ink-muted);
+      }
+      .footer-right a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      /* ── SCREENSHOTS ── */
+      .screenshot {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 24px rgba(13, 15, 18, 0.1);
+        display: block;
+        margin-top: 24px;
+      }
+
+      /* ── CURIOSITY BRIDGE ── */
+      .curiosity-bridge {
+        text-align: center;
+        padding: 40px 0 0;
+      }
+
+      .curiosity-bridge p {
+        font-size: 1.05rem;
+        color: var(--ink-soft);
+        font-weight: 300;
+        line-height: 1.7;
+        max-width: 520px;
+        margin: 0 auto;
+      }
+
+      .curiosity-bridge p em {
+        font-style: italic;
+        color: var(--ink);
+        font-weight: 400;
+      }
+
+      .curiosity-arrow {
+        display: block;
+        margin: 16px auto 0;
+        color: var(--ink-muted);
+        font-size: 1.2rem;
+        animation: bounceDown 1.8s ease infinite;
+      }
+
+      @keyframes bounceDown {
+        0%,
+        100% {
+          transform: translateY(0);
+          opacity: 0.5;
+        }
+        50% {
+          transform: translateY(6px);
+          opacity: 1;
+        }
+      }
+
+      /* ── IMMEDIATE OUTPUT SECTION ── */
+      .output-preview {
+        padding: 0 0 80px;
+        opacity: 0;
+        animation: fadeUp 0.6s ease 0.4s forwards;
+      }
+
+      .output-preview-inner {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .output-preview-header {
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--surface);
+      }
+
+      .output-preview-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--accent);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .output-preview-tag::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        background: var(--accent);
+        border-radius: 50%;
+        animation: pulse 2s ease infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+
+      .output-preview-caption {
+        font-size: 0.78rem;
+        color: var(--ink-muted);
+        font-style: italic;
+      }
+
+      .output-preview-img {
+        width: 100%;
+        display: block;
+      }
+
+      /* ── SAMPLE GUIDE SECTION ── */
+      .sample-section {
+        padding: 80px 0;
+        border-top: 1px solid var(--border);
+        opacity: 0;
+        animation: fadeUp 0.6s ease 0.45s forwards;
+      }
+
+      .sample-inner {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 64px;
+        align-items: center;
+      }
+
+      @media (max-width: 768px) {
+        .sample-inner {
+          grid-template-columns: 1fr;
+          gap: 32px;
+        }
+      }
+
+      .sample-left {
+      }
+
+      .sample-left h2 {
+        font-family: "Instrument Serif", serif;
+        font-size: clamp(1.8rem, 3vw, 2.4rem);
+        letter-spacing: -0.03em;
+        color: var(--ink);
+        margin-bottom: 14px;
+        line-height: 1.15;
+      }
+
+      .sample-left h2 em {
+        font-style: italic;
+        color: var(--accent);
+      }
+
+      .sample-left p {
+        font-size: 0.97rem;
+        color: var(--ink-soft);
+        font-weight: 300;
+        line-height: 1.75;
+        margin-bottom: 12px;
+      }
+
+      .sample-left p strong {
+        color: var(--ink);
+        font-weight: 600;
+      }
+
+      .sample-prompt {
+        display: inline-block;
+        margin: 16px 0 24px;
+        padding: 12px 16px;
+        background: var(--accent-lt);
+        border: 1px solid rgba(26, 107, 74, 0.2);
+        border-radius: 8px;
+        font-size: 0.88rem;
+        color: var(--accent);
+        font-style: italic;
+        line-height: 1.5;
+      }
+
+      .sample-prompt span {
+        display: block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink-muted);
+        font-style: normal;
+        margin-bottom: 4px;
+      }
+
+      .btn-sample {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 22px;
+        background: var(--white);
+        border: 1.5px solid var(--accent);
+        border-radius: var(--radius);
+        color: var(--accent);
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.88rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition:
+          background 0.2s,
+          color 0.2s;
+      }
+
+      .btn-sample:hover {
+        background: var(--accent);
+        color: white;
+      }
+
+      .sample-right {
+        position: relative;
+      }
+
+      .sample-what {
+        margin-bottom: 20px;
+        padding: 18px 20px;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+      }
+
+      .sample-what-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--ink-muted);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+      }
+
+      .sample-what-items {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .sample-what-items span {
+        font-size: 0.8rem;
+        color: var(--ink-soft);
+        background: var(--accent-lt);
+        border: 1px solid rgba(26, 107, 74, 0.15);
+        border-radius: 100px;
+        padding: 4px 12px;
+        font-weight: 500;
+      }
+
+      .sample-judge {
+        font-family: "Instrument Serif", serif;
+        font-size: 1.6rem;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin-bottom: 8px;
+        line-height: 1.2;
+      }
+
+      .sample-sub {
+        font-size: 0.95rem;
+        color: var(--ink-soft);
+        font-weight: 300;
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
+
+      .sample-pages {
+        position: relative;
+        height: 340px;
+      }
+
+      .sample-page {
+        position: absolute;
+        width: 88%;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 24px rgba(13, 15, 18, 0.1);
+        overflow: hidden;
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
+      }
+
+      .sample-page img {
+        width: 100%;
+        display: block;
+      }
+
+      .sample-page:nth-child(1) {
+        top: 0;
+        left: 0;
+        z-index: 3;
+        transform: rotate(-1deg);
+      }
+      .sample-page:nth-child(2) {
+        top: 20px;
+        left: 24px;
+        z-index: 2;
+        transform: rotate(1.5deg);
+      }
+      .sample-page:nth-child(3) {
+        top: 40px;
+        left: 46px;
+        z-index: 1;
+        transform: rotate(3deg);
+      }
+
+      .sample-pages:hover .sample-page:nth-child(1) {
+        transform: rotate(0deg) translateY(-4px);
+        box-shadow: 0 12px 40px rgba(13, 15, 18, 0.15);
+      }
+      .sample-pages:hover .sample-page:nth-child(2) {
+        transform: rotate(0deg) translate(20px, 10px);
+      }
+      .sample-pages:hover .sample-page:nth-child(3) {
+        transform: rotate(0deg) translate(40px, 20px);
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <!-- NAV -->
+      <nav>
+        <a href="https://teamsyncai.com" class="logo">
+          <img
+            src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/teamsyncai_logo.png"
+            alt="TeamSyncAI"
+          />
+        </a>
+        <span class="nav-badge">Free beta — No credit card</span>
+      </nav>
+
+      <!-- HERO -->
+      <section class="hero">
+        <div class="hero-left">
+          <h1>
+            Before you interview<br />candidates,
+            <em>build<br />the interview.</em>
+          </h1>
+          <p class="hero-proof" style="margin-bottom: 24px">
+            Generate a structured hiring blueprint for your open role before you
+            start interviewing.
+          </p>
+          <div class="micro-trust">
+            About 5 minutes <span>·</span> Free beta <span>·</span> No credit
+            card
+          </div>
+        </div>
+
+        <!-- FORM -->
+        <div class="form-card">
+          <div class="form-title">Generate your interview blueprint</div>
+          <div class="form-subtitle">
+            Add your role. Answer a few questions. Your blueprint is ready in
+            minutes — free.
+          </div>
+
+          <div class="success-panel" id="success-panel">
+            <div class="success-icon">
+              <svg
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <h3>You're in.</h3>
+            <p>
+              Taking you to TeamSyncAI now — your interview blueprint will be
+              ready once you add your role.
+            </p>
+            <a href="#" class="btn-secondary" id="redirect-btn"
+              >Open TeamSyncAI →</a
+            >
+          </div>
+
+          <div class="form-fields" id="form-fields">
+            <div class="global-error" id="global-error"></div>
+            <form id="lead-form" novalidate>
+              <input
+                type="text"
+                name="website"
+                id="hp-website"
+                style="display: none"
+                tabindex="-1"
+                autocomplete="off"
+              />
+
+              <div class="field-group" id="fg-name">
+                <label for="name">First name</label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  placeholder="Alex Johnson"
+                  autocomplete="name"
+                />
+                <div class="error-msg">Please enter your name</div>
+              </div>
+
+              <div class="field-group" id="fg-email">
+                <label for="email"
+                  >Work email
+                  <span
+                    style="
+                      font-weight: 400;
+                      text-transform: none;
+                      letter-spacing: 0;
+                      color: var(--ink-muted);
+                      font-size: 0.72rem;
+                    "
+                    >(where we'll send your blueprint)</span
+                  ></label
+                >
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="alex@company.com"
+                  autocomplete="email"
+                />
+                <div class="error-msg">Please enter a valid email</div>
+                <div class="email-exists-box" id="email-exists-box">
+                  This email already has an account. &nbsp;<a
+                    href="https://app.teamsyncai.com/sign-in"
+                    >Sign in instead →</a
+                  >
+                </div>
+              </div>
+
+              <div class="legal-section">
+                <div class="legal-row">
+                  <input type="checkbox" id="chk-terms" name="terms" />
+                  <label for="chk-terms" class="legal-label">
+                    I agree to the
+                    <a href="https://teamsyncai.com/legal/terms" target="_blank"
+                      >Terms and Conditions</a
+                    >
+                  </label>
+                </div>
+                <div class="legal-row">
+                  <input type="checkbox" id="chk-privacy" name="privacy" />
+                  <label for="chk-privacy" class="legal-label">
+                    I agree to the
+                    <a
+                      href="https://teamsyncai.com/legal/privacy"
+                      target="_blank"
+                      >Privacy Policy</a
+                    >
+                  </label>
+                </div>
+              </div>
+
+              <div class="turnstile-wrap">
+                <div class="turnstile-lbl">Please verify you're human</div>
+                <div id="ts-loading" class="ts-loading">
+                  <div
+                    style="
+                      width: 16px;
+                      height: 16px;
+                      border: 2px solid rgba(26, 107, 74, 0.2);
+                      border-top-color: var(--accent);
+                      border-radius: 50%;
+                      animation: spin 0.7s linear infinite;
+                      flex-shrink: 0;
+                    "
+                  ></div>
+                  Loading verification…
+                </div>
+                <div id="ts-error" class="ts-error"></div>
+                <button
+                  type="button"
+                  id="ts-retry"
+                  class="retry-btn"
+                  onclick="retryTurnstile()"
+                >
+                  ↻ Retry verification
+                </button>
+                <div
+                  id="turnstile-container"
+                  style="
+                    display: flex;
+                    justify-content: center;
+                    min-height: 65px;
+                  "
+                ></div>
+              </div>
+
+              <button
+                type="submit"
+                class="btn-primary"
+                id="submit-btn"
+                disabled
+              >
+                <span class="btn-text"
+                  >Generate Blueprint for My Role — Free →</span
+                >
+                <span class="btn-loader"><span class="spinner"></span></span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- IMMEDIATE OUTPUT -->
+      <section class="output-preview">
+        <div class="output-preview-inner">
+          <div class="output-preview-header">
+            <div class="output-preview-tag">Example Output</div>
+            <div class="output-preview-caption">
+              Interview questions generated for an SDR role — AI-built, linked
+              to evaluation goals
+            </div>
+          </div>
+          <img
+            src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/hiring-guide-26-03/app-screenshot-preview-interview-questions.png"
+            alt="Example interview questions generated by TeamSyncAI — showing main question, linked evaluation goal, and follow-up probes"
+            class="output-preview-img"
+            loading="eager"
+          />
+        </div>
+      </section>
+
+      <!-- CURIOSITY BRIDGE -->
+      <div class="curiosity-bridge">
+        <p>
+          Interview questions are just one part.<br /><em
+            >Here is everything the blueprint generates.</em
+          >
+        </p>
+        <span class="curiosity-arrow">↓</span>
+      </div>
+
+      <hr class="section-divider" />
+
+      <!-- WHAT YOU GET -->
+      <section class="output-section">
+        <div class="section-label">What you'll receive</div>
+        <h2>For your open role,<br /><em>we generate all of this.</em></h2>
+        <p class="output-intro">
+          Not a template. Not a checklist. A complete AI-built hiring system
+          calibrated to your exact role, team, and how success actually looks
+          for you.
+        </p>
+
+        <div class="output-grid">
+          <div class="output-item">
+            <div class="output-check">
+              <svg
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div class="output-text">
+              <strong>Role Complexity Analysis</strong>Autonomy level, decision
+              scope, and leadership expectations — defined before you write a
+              single question.
+            </div>
+          </div>
+          <div class="output-item">
+            <div class="output-check">
+              <svg
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div class="output-text">
+              <strong>30/60/90 Day Success Indicators</strong>Concrete outcomes
+              that define what a good hire looks like — before you start
+              interviewing.
+            </div>
+          </div>
+          <div class="output-item">
+            <div class="output-check">
+              <svg
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div class="output-text">
+              <strong>Failure Risk Signals</strong>The patterns that predict a
+              bad hire for this specific role — so you know what to watch for.
+            </div>
+          </div>
+          <div class="output-item">
+            <div class="output-check">
+              <svg
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div class="output-text">
+              <strong>Weighted Evaluation Goals</strong>What matters most for
+              this hire, ranked and weighted — so every candidate gets a fair,
+              consistent review.
+            </div>
+          </div>
+          <div class="output-item">
+            <div class="output-check">
+              <svg
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div class="output-text">
+              <strong>Behavioural Interview Questions</strong>Mapped to your
+              evaluation goals — not generic questions copied from a blog post.
+            </div>
+          </div>
+          <div class="output-item">
+            <div class="output-check">
+              <svg
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div class="output-text">
+              <strong>Follow-Up Probes</strong>What to ask when answers get
+              vague — so you never leave an interview wondering what just
+              happened.
+            </div>
+          </div>
+          <div class="output-item">
+            <div class="output-check">
+              <svg
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div class="output-text">
+              <strong>Must-Have vs. Nice-to-Have</strong>Clearly separated — so
+              you stop rejecting good candidates for the wrong reasons.
+            </div>
+          </div>
+          <div class="output-item">
+            <div class="output-check">
+              <svg
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div class="output-text">
+              <strong>Post-Hire Check-In Questions</strong>Automated at 30, 60,
+              and 90 days — tied to the goals you set, so you know if the hire
+              is working.
+            </div>
+          </div>
+          <div class="output-item">
+            <div class="output-check">
+              <svg
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div class="output-text">
+              <strong>A Ready-to-Use Interview Framework</strong>Everything
+              above, structured into a 15-minute async interview you can run
+              immediately.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- HOW IT WORKS -->
+      <section class="how-section">
+        <div class="section-label">How it works</div>
+        <h2>Three steps.<br /><em>One hiring system.</em></h2>
+        <p class="how-intro">
+          Most hiring tools give you a template and wish you luck. TeamSyncAI
+          builds a system around your specific role — then keeps working after
+          the hire.
+        </p>
+
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div>
+              <div class="step-tag">Before the interview</div>
+              <div class="step-title">We calibrate the role with AI.</div>
+              <div class="step-body">
+                <p>
+                  We start by asking you the questions most hiring managers have
+                  never been asked. What does success look like at 90 days —
+                  specifically? What kind of person always fails in this role?
+                  How much autonomy does this role actually require in the first
+                  30 days?
+                </p>
+                <p>
+                  <strong>Your answers train the AI on your exact hire.</strong>
+                  Not on a job title. Not on an industry average. On the
+                  specific reality of your team and this role.
+                </p>
+              </div>
+              <img
+                src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/hiring-guide-26-03/app-screenshot-job-input.png"
+                alt="Add your role in TeamSyncAI"
+                class="screenshot"
+                loading="lazy"
+              />
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">2</div>
+            <div>
+              <div class="step-tag">During the interview</div>
+              <div class="step-title">
+                AI builds your complete interview system.
+              </div>
+              <div class="step-body">
+                <p>
+                  From your calibration answers, the AI generates weighted
+                  evaluation goals, behavioural interview questions mapped to
+                  outcomes, and follow-up probes for when answers get vague.
+                </p>
+                <p>
+                  <strong>Every candidate gets evaluated the same way.</strong>
+                  Not based on who had a better Tuesday. Not on gut feel. On
+                  criteria you defined before the first resume came in.
+                </p>
+              </div>
+              <img
+                src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/hiring-guide-26-03/app-screenshot-generate-calibration.png"
+                alt="Calibration complete — interview questions ready"
+                class="screenshot"
+                loading="lazy"
+              />
+              <img
+                src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/hiring-guide-26-03/app-screenshot-probing-questions.png"
+                alt="AI-generated interview question with linked goal and follow-up probes"
+                class="screenshot"
+                loading="lazy"
+                style="margin-top: 12px"
+              />
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">3</div>
+            <div>
+              <div class="step-tag">After the hire</div>
+              <div class="step-title">AI tells you if you were right.</div>
+              <div class="step-body">
+                <p>
+                  Most hiring tools stop at the offer letter. TeamSyncAI sends
+                  you check-in questions at 30, 60, and 90 days — tied to the
+                  exact success indicators you defined at the start.
+                </p>
+                <p>
+                  <strong
+                    >Over time, the AI learns what good hiring looks like for
+                    your team specifically.</strong
+                  >
+                  Every hire you make improves the next one.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SAMPLE GUIDE -->
+      <section class="sample-section">
+        <div class="sample-inner">
+          <div class="sample-left">
+            <div class="section-label">Real example</div>
+            <div class="sample-what">
+              <div class="sample-what-label">What the Blueprint Generates</div>
+              <div class="sample-what-items">
+                <span>Role success definition</span>
+                <span>Success &amp; failure signals</span>
+                <span>Structured interview questions</span>
+                <span>Evaluation rubric</span>
+                <span>30/60/90-day performance indicators</span>
+              </div>
+            </div>
+            <div class="sample-prompt">
+              <span>Input used for this example</span>
+              "Looking for a hungry SDR, 1-2 years experience, B2B SaaS."
+            </div>
+            <p class="sample-judge">Judge it by the output.</p>
+            <p class="sample-sub">
+              Generate a hiring blueprint for your open role and evaluate it
+              yourself.
+            </p>
+            <a
+              href="#"
+              class="btn-primary"
+              style="
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                width: auto;
+                padding: 13px 22px;
+                margin-top: 0;
+                text-decoration: none;
+                font-size: 0.9rem;
+              "
+              onclick="
+                document
+                  .getElementById('name')
+                  .scrollIntoView({ behavior: 'smooth' });
+                document.getElementById('name').focus();
+                return false;
+              "
+            >
+              Generate Blueprint for My Role →
+            </a>
+            <div
+              style="
+                margin-top: 10px;
+                font-size: 0.78rem;
+                color: var(--ink-muted);
+              "
+            >
+              About 5 minutes · No credit card
+            </div>
+            <a
+              href="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/hiring-guide-26-03/sample-hiring-guide.pdf"
+              target="_blank"
+              class="btn-sample"
+              style="margin-top: 14px"
+            >
+              <svg
+                width="16"
+                height="16"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="12" y1="18" x2="12" y2="12" />
+                <line x1="9" y1="15" x2="15" y2="15" />
+              </svg>
+              See the full SDR example →
+            </a>
+          </div>
+          <div class="sample-right">
+            <div class="sample-pages">
+              <div class="sample-page">
+                <img
+                  src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/hiring-guide-26-03/app-screenshot-probing-questions.png"
+                  alt="Interview question preview"
+                  loading="lazy"
+                />
+              </div>
+              <div class="sample-page">
+                <img
+                  src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/hiring-guide-26-03/app-screenshot-generate-calibration.png"
+                  alt="Calibration complete"
+                  loading="lazy"
+                />
+              </div>
+              <div class="sample-page">
+                <img
+                  src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/hiring-guide-26-03/app-screenshot-job-input.png"
+                  alt="Job details form"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section class="faq-section">
+        <h2>Questions you're probably thinking.</h2>
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              Is this actually free?
+              <div class="faq-icon">
+                <svg
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </div>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                Yes — generating your interview blueprint and running your first
+                hiring cycle is completely free. No credit card, no trial
+                expiry, no sales call. We're in beta and want you to use it on a
+                real role so we can learn what works.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              Do I need to replace how we currently hire?
+              <div class="faq-icon">
+                <svg
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </div>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                No. TeamSyncAI is additive — it works alongside whatever you're
+                already doing. Use the blueprint in your existing process. Run
+                the async interviews or don't. The calibration and questions are
+                valuable on their own, even if you never change anything else.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              What if I don't have a formal job description?
+              <div class="faq-icon">
+                <svg
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </div>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                That's fine — and honestly pretty common. A rough description
+                works. Something like "looking for a hungry SDR, 1-2 years B2B
+                SaaS experience" is enough to get started. The calibration
+                questions we ask you will fill in the gaps the AI needs.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              How is this different from a template or a ChatGPT prompt?
+              <div class="faq-icon">
+                <svg
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </div>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                Templates and prompts give you generic output. TeamSyncAI
+                calibrates to <strong>your specific answers</strong> — what
+                success looks like on your team, what failure looks like, how
+                much autonomy this role really needs. The questions it generates
+                are mapped to evaluation goals weighted by what you told us
+                actually matters. That's not something a template can do.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              Who sees my data?
+              <div class="faq-icon">
+                <svg
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </div>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                Your data is yours. We don't sell it, share it between
+                customers, or use it for advertising. Your hiring data and
+                candidate responses are private to your account. Full details in
+                our
+                <a href="https://teamsyncai.com/legal/privacy" target="_blank"
+                  >Privacy Policy</a
+                >.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              We already use a recruiter. Is this still useful?
+              <div class="faq-icon">
+                <svg
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </div>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                Yes — recruiters find candidates. TeamSyncAI helps you evaluate
+                them. The calibration, interview questions, and post-hire
+                check-ins are things most recruiters don't provide. They're
+                complementary, not competing.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              Why are you giving this away for free?
+              <div class="faq-icon">
+                <svg
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </div>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                We're launching TeamSyncAI and looking for hiring teams willing
+                to use the system on a real role and give us feedback. You get a
+                genuinely useful hiring blueprint. We get to learn what works.
+                That's the deal — no hidden catch, no aggressive upsell.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BOTTOM CTA -->
+      <section class="bottom-cta">
+        <h2>Your next hire deserves<br />a <em>better process.</em></h2>
+        <p>
+          Generate your AI interview blueprint for free.<br />No credit card. No
+          sales call. Use it in your current hiring cycle.
+        </p>
+        <a
+          href="#"
+          class="btn-cta"
+          onclick="
+            document
+              .getElementById('name')
+              .scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('name').focus();
+            return false;
+          "
+        >
+          Generate Blueprint for My Role — Free
+        </a>
+        <div class="bottom-microtrust">
+          Free beta · Takes under 5 minutes · Built for your exact role
+        </div>
+      </section>
+
+      <!-- FOOTER -->
+      <footer>
+        <div class="footer-left">© 2025 TeamSyncAI · Halifax, NS</div>
+        <div class="footer-right">
+          <a href="https://teamsyncai.com/legal/privacy" target="_blank"
+            >Privacy Policy</a
+          >
+          &nbsp;·&nbsp;
+          <a href="https://teamsyncai.com/legal/terms" target="_blank">Terms</a>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      // ── CONFIG ────────────────────────────────────────────────────────────
+      const TURNSTILE_SITE_KEY = "0x4AAAAAAA6GdaAB-8aAzYLn";
+      const AUTH_API = "https://auth-api.teamsyncai.com/api/auth";
+      // APP_COMPLETE_URL removed — redirecting directly to appExchangePage
+      // ─────────────────────────────────────────────────────────────────────
+
+      const params = new URLSearchParams(window.location.search);
+      const utmSource = params.get("utm_source") || "";
+      const utmCampaign = params.get("utm_campaign") || "";
+      const refEmail = params.get("ref") || "";
+
+      if (refEmail) {
+        const el = document.getElementById("email");
+        el.value = decodeURIComponent(refEmail);
+        setTimeout(() => {
+          emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(el.value.trim());
+          if (emailIsValid) checkEmailExists(el.value.trim());
           updateSubmitState();
+        }, 300);
+      }
+
+      let turnstileToken = "";
+      let turnstileWidgetId = null;
+
+      function initTurnstile() {
+        if (!window.turnstile) {
+          setTimeout(initTurnstile, 150);
           return;
         }
-        throw new Error(data?.error || data?.message || `Registration failed (${res.status})`);
+        document.getElementById("ts-loading").style.display = "none";
+        try {
+          turnstileWidgetId = window.turnstile.render("#turnstile-container", {
+            sitekey: TURNSTILE_SITE_KEY,
+            theme: "light",
+            callback: (token) => {
+              turnstileToken = token;
+              document.getElementById("ts-error").style.display = "none";
+              document.getElementById("ts-retry").style.display = "none";
+              updateSubmitState();
+            },
+            "error-callback": () => {
+              turnstileToken = "";
+              showTsError("Verification failed. Please retry.");
+              updateSubmitState();
+            },
+            "expired-callback": () => {
+              turnstileToken = "";
+              updateSubmitState();
+            },
+            "timeout-callback": () => {
+              turnstileToken = "";
+              showTsError("Verification timed out. Please retry.");
+              updateSubmitState();
+            },
+          });
+        } catch (e) {
+          showTsError("Failed to load verification. Try refreshing the page.");
+        }
       }
 
-      const result          = data?.data || data;
-      const appExchangePage = result?.appExchangePage || result?.app_exchange_page;
-      const exchangeToken   = result?.exchangeToken   || result?.exchange_token;
-
-      let redirectTo;
-      if (appExchangePage) {
-        redirectTo = appExchangePage;
-      } else if (exchangeToken) {
-        redirectTo = `https://app.teamsyncai.com/auth/exchange?token=${exchangeToken}`;
-      } else {
-        throw new Error('No exchange token received — please try again.');
+      function showTsError(msg) {
+        const el = document.getElementById("ts-error");
+        el.textContent = msg;
+        el.style.display = "block";
+        document.getElementById("ts-retry").style.display = "block";
       }
 
-      document.getElementById('form-fields').classList.add('hidden');
-      document.getElementById('success-panel').classList.add('visible');
-      document.getElementById('redirect-btn').href = redirectTo;
-      btn.classList.remove('loading');
-
-      setTimeout(() => { window.location.href = redirectTo; }, 2000);
-
-    } catch (err) {
-      btn.classList.remove('loading');
-      if (turnstileWidgetId !== null && window.turnstile) {
-        try { window.turnstile.reset(turnstileWidgetId); turnstileToken = ''; } catch(e) {}
+      function retryTurnstile() {
+        document.getElementById("ts-error").style.display = "none";
+        document.getElementById("ts-retry").style.display = "none";
+        document.getElementById("ts-loading").style.display = "flex";
+        turnstileToken = "";
+        if (turnstileWidgetId !== null && window.turnstile) {
+          try {
+            window.turnstile.reset(turnstileWidgetId);
+          } catch (e) {}
+        }
+        document.getElementById("ts-loading").style.display = "none";
+        updateSubmitState();
       }
-      updateSubmitState();
-      if (err.name === 'AbortError') {
-        showGlobalError('Request timed out. Please check your connection and try again.');
-      } else {
-        showGlobalError(err.message || 'Unable to create account. Please try again.');
-      }
-    }
-  });
 
-  document.getElementById('name').addEventListener('input', () => setFieldError('fg-name', false));
-</script>
-</body>
+      setTimeout(initTurnstile, 300);
+
+      let emailCheckTimer = null;
+      let emailIsValid = false;
+      let emailExists = false;
+
+      async function checkEmailExists(email) {
+        try {
+          const res = await fetch(`${AUTH_API}/check-email`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ email }),
+          });
+          if (!res.ok) return;
+          const data = await res.json();
+          emailExists = !!data.exists;
+          document
+            .getElementById("email-exists-box")
+            .classList.toggle("visible", emailExists);
+          if (emailExists)
+            document.getElementById("fg-email").classList.remove("has-error");
+          updateSubmitState();
+        } catch (e) {}
+      }
+
+      document.getElementById("email").addEventListener("input", function () {
+        const email = this.value.trim();
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+        emailIsValid = re.test(email);
+        emailExists = false;
+        document.getElementById("email-exists-box").classList.remove("visible");
+        document.getElementById("fg-email").classList.remove("has-error");
+        clearTimeout(emailCheckTimer);
+        if (emailIsValid)
+          emailCheckTimer = setTimeout(() => checkEmailExists(email), 500);
+        updateSubmitState();
+      });
+
+      function updateSubmitState() {
+        const name = document.getElementById("name").value.trim();
+        const terms = document.getElementById("chk-terms").checked;
+        const privacy = document.getElementById("chk-privacy").checked;
+        document.getElementById("submit-btn").disabled = !(
+          name &&
+          emailIsValid &&
+          !emailExists &&
+          terms &&
+          privacy &&
+          turnstileToken
+        );
+      }
+
+      document
+        .getElementById("name")
+        .addEventListener("input", updateSubmitState);
+      ["chk-terms", "chk-privacy"].forEach((id) =>
+        document
+          .getElementById(id)
+          .addEventListener("change", updateSubmitState),
+      );
+
+      function setFieldError(groupId, show) {
+        document.getElementById(groupId).classList.toggle("has-error", show);
+      }
+
+      function showGlobalError(msg) {
+        const el = document.getElementById("global-error");
+        el.textContent = msg;
+        el.classList.add("visible");
+      }
+
+      function hideGlobalError() {
+        document.getElementById("global-error").classList.remove("visible");
+      }
+
+      // FAQ toggle
+      function toggleFaq(btn) {
+        const item = btn.closest(".faq-item");
+        const isOpen = item.classList.contains("open");
+        document
+          .querySelectorAll(".faq-item.open")
+          .forEach((el) => el.classList.remove("open"));
+        if (!isOpen) item.classList.add("open");
+      }
+
+      document
+        .getElementById("lead-form")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          hideGlobalError();
+
+          if (document.getElementById("hp-website").value) return;
+
+          const name = document.getElementById("name").value.trim();
+          const email = document.getElementById("email").value.trim();
+          const terms = document.getElementById("chk-terms").checked;
+          const privacy = document.getElementById("chk-privacy").checked;
+
+          let valid = true;
+          if (!name) {
+            setFieldError("fg-name", true);
+            valid = false;
+          }
+          if (!emailIsValid) {
+            setFieldError("fg-email", true);
+            valid = false;
+          }
+          if (!terms || !privacy) {
+            showGlobalError(
+              "Please agree to the Terms and Privacy Policy to continue.",
+            );
+            valid = false;
+          }
+          if (!turnstileToken) {
+            showGlobalError("Please complete the human verification above.");
+            valid = false;
+          }
+          if (!valid) return;
+
+          const btn = document.getElementById("submit-btn");
+          btn.classList.add("loading");
+
+          const payload = {
+            name,
+            email,
+            legal: {
+              terms_conditions: terms ? "accepted" : "",
+              privacy: privacy ? "accepted" : "",
+              name,
+            },
+            legalAcceptance: { name, terms, privacy },
+            plan_intent: { is_trial: true },
+            turnstileToken,
+            source: {
+              utm_source: utmSource,
+              utm_campaign: utmCampaign,
+              ref_email: refEmail,
+              page: window.location.href,
+              submitted_at: new Date().toISOString(),
+            },
+          };
+
+          try {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 10000);
+
+            const res = await fetch(`${AUTH_API}/website-register`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify(payload),
+              signal: controller.signal,
+            });
+
+            clearTimeout(timeout);
+            const data = await res.json();
+
+            if (!res.ok) {
+              if (
+                res.status === 409 ||
+                (data.error && data.error.toLowerCase().includes("email"))
+              ) {
+                emailExists = true;
+                document
+                  .getElementById("email-exists-box")
+                  .classList.add("visible");
+                btn.classList.remove("loading");
+                updateSubmitState();
+                return;
+              }
+              throw new Error(
+                data?.error ||
+                  data?.message ||
+                  `Registration failed (${res.status})`,
+              );
+            }
+
+            const result = data?.data || data;
+            const appExchangePage =
+              result?.appExchangePage || result?.app_exchange_page;
+            const exchangeToken =
+              result?.exchangeToken || result?.exchange_token;
+
+            let redirectTo;
+            if (appExchangePage) {
+              redirectTo = appExchangePage;
+            } else if (exchangeToken) {
+              redirectTo = `https://app.teamsyncai.com/auth/exchange?token=${exchangeToken}`;
+            } else {
+              throw new Error("No exchange token received — please try again.");
+            }
+
+            document.getElementById("form-fields").classList.add("hidden");
+            document.getElementById("success-panel").classList.add("visible");
+            document.getElementById("redirect-btn").href = redirectTo;
+            btn.classList.remove("loading");
+
+            setTimeout(() => {
+              window.location.href = redirectTo;
+            }, 2000);
+          } catch (err) {
+            btn.classList.remove("loading");
+            if (turnstileWidgetId !== null && window.turnstile) {
+              try {
+                window.turnstile.reset(turnstileWidgetId);
+                turnstileToken = "";
+              } catch (e) {}
+            }
+            updateSubmitState();
+            if (err.name === "AbortError") {
+              showGlobalError(
+                "Request timed out. Please check your connection and try again.",
+              );
+            } else {
+              showGlobalError(
+                err.message || "Unable to create account. Please try again.",
+              );
+            }
+          }
+        });
+
+      document
+        .getElementById("name")
+        .addEventListener("input", () => setFieldError("fg-name", false));
+    </script>
+  </body>
 </html>
