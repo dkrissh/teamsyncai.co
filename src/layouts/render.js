@@ -69,7 +69,7 @@ function renderLayout(pageConfig, variant) {
             ${config.hero.subtitle}
           </p>
           <div class="micro-trust">
-            ${config.hero.trustline.split('·').map(item => \`<span>\${item.trim()}</span>\`).join('<span>·</span>')}
+            ${config.hero.trustline.split('·').map(item => '<span>' + item.trim() + '</span>').join('<span>·</span>')}
           </div>
         </div>
 
