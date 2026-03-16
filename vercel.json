@@ -1,8 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/:page",
-      "destination": "/api/[page]"
+      "source": "/demo",
+      "destination": "/demo.html"
     }
   ],
   "redirects": [
