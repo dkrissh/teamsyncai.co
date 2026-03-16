@@ -29,13 +29,18 @@ try {
 async function fetchVariant(industry) {
   try {
     const url = `https://auth-api.teamsyncai.com/api/app/landing/page-variant?industry=${industry}`;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
+
     const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-      timeout: 2000, // 2 second timeout
+      signal: controller.signal,
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       console.warn(`Failed to fetch variant (${response.status}), using defaults`);
@@ -54,7 +59,7 @@ async function fetchVariant(industry) {
 /**
  * Main handler: Match route to page, render HTML
  */
-export default async function handler(req, res) {
+async function handler(req, res) {
   try {
     // Get page name from dynamic route
     // Vercel automatically captures [page] from the URL path
@@ -91,3 +96,5 @@ export default async function handler(req, res) {
     });
   }
 }
+
+module.exports = handler;

@@ -3,13 +3,14 @@
     {
       "source": "/:page",
       "destination": "/api/[page]"
-    },
-    {
-      "source": "/",
-      "destination": "/api/[page]?page=demo"
     }
   ],
   "redirects": [
+    {
+      "source": "/",
+      "destination": "/demo",
+      "permanent": true
+    },
     {
       "source": "/legal/privacy",
       "destination": "https://teamsyncai.com/legal/privacy",
