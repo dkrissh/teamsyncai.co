@@ -488,129 +488,6 @@
       const AUTH_API = "https://auth-api.teamsyncai.com/api/auth";
       let currentVariant = null;
 
-      // ─── Domain-based brand variants ────────────────────────────────────────
-      const BLUEPRINT_DOMAINS = ["joinhiringblueprint.com", "tryhiringblueprint.com"];
-
-      const DOMAIN_VARIANTS = {
-        blueprint: {
-          pageTitle: "Generate Your Interview Blueprint | HiringBlueprint",
-          logoHref: "https://joinhiringblueprint.com",
-          logoSrc: null, // falls back to text-only logo
-          logoAlt: "HiringBlueprint",
-          logoText: "HiringBlueprint",
-          navBadge: "Free · No credit card",
-          heroTitle: 'Before you interview<br />anyone,<br /><em>build<br />the blueprint.</em>',
-          heroSubtitle: "Generate a structured interview blueprint for any role before your first conversation.",
-          formTitle: "Generate your interview blueprint",
-          formSubtitle: "Add your role. Answer a few questions. Your blueprint is ready in minutes — free.",
-          submitLabel: "Build My Blueprint — Free →",
-          successBody: "Taking you to HiringBlueprint now — your interview blueprint will be ready once you add your role.",
-          successBtn: "Open HiringBlueprint →",
-          howIntro: "Most hiring tools give you a template and wish you luck. HiringBlueprint builds an interview blueprint around your specific role — then keeps working after the hire.",
-          bottomCtaTitle: 'Your next hire deserves<br />a <em>better blueprint.</em>',
-          bottomCtaBody: "Generate your interview blueprint for free.<br />No credit card. No sales call. Use it in your current hiring cycle.",
-          bottomCtaBtn: "Build Your Blueprint — Free",
-          bottomMicrotrust: "Free · Takes under 5 minutes · Built for your exact role",
-          footerLeft: "© 2025 HiringBlueprint · Halifax, NS",
-          privacyUrl: "https://teamsyncai.com/legal/privacy",
-          termsUrl: "https://teamsyncai.com/legal/terms",
-        },
-      };
-
-      function applyDomainVariant() {
-        const host = window.location.hostname.replace(/^www\./, "");
-        const isBlueprint = BLUEPRINT_DOMAINS.includes(host);
-        if (!isBlueprint) return;
-
-        const v = DOMAIN_VARIANTS.blueprint;
-
-        // Page title & meta
-        document.title = v.pageTitle;
-        const metaDesc = document.querySelector('meta[name="description"]');
-        if (metaDesc) metaDesc.setAttribute("content", v.pageTitle);
-
-        // Logo
-        const logoLink = document.querySelector("nav .logo");
-        if (logoLink) logoLink.href = v.logoHref;
-        const logoImg = document.querySelector("nav .logo img");
-        if (logoImg) {
-          if (v.logoSrc) {
-            logoImg.src = v.logoSrc;
-            logoImg.alt = v.logoAlt;
-          } else {
-            // No custom logo yet — hide img and show text
-            logoImg.style.display = "none";
-            let logoTextEl = document.querySelector("nav .logo .logo-text");
-            if (!logoTextEl) {
-              logoTextEl = document.createElement("span");
-              logoTextEl.className = "logo-text";
-              logoLink.appendChild(logoTextEl);
-            }
-            logoTextEl.textContent = v.logoText;
-          }
-        }
-
-        // Nav badge
-        const navBadge = document.querySelector(".nav-badge");
-        if (navBadge) navBadge.textContent = v.navBadge;
-
-        // Hero
-        const heroTitle = document.getElementById("hero-title");
-        if (heroTitle) heroTitle.innerHTML = v.heroTitle;
-        const heroSubtitle = document.getElementById("hero-subtitle");
-        if (heroSubtitle) heroSubtitle.innerHTML = v.heroSubtitle;
-
-        // Form card
-        const formTitle = document.getElementById("form-title");
-        if (formTitle) formTitle.textContent = v.formTitle;
-        const formSubtitle = document.getElementById("form-subtitle");
-        if (formSubtitle) formSubtitle.textContent = v.formSubtitle;
-
-        // Submit button
-        const submitLabel = document.querySelector("#submit-btn .btn-text");
-        if (submitLabel) submitLabel.textContent = v.submitLabel;
-
-        // Success panel
-        const successBody = document.querySelector("#success-panel p");
-        if (successBody) successBody.innerHTML = v.successBody;
-        const redirectBtn = document.getElementById("redirect-btn");
-        if (redirectBtn) redirectBtn.textContent = v.successBtn;
-
-        // How it works intro (replaces TeamSyncAI brand mentions)
-        const howIntro = document.querySelector(".how-intro");
-        if (howIntro) howIntro.innerHTML = v.howIntro;
-
-        // FAQ answers — replace inline TeamSyncAI mentions with HiringBlueprint
-        document.querySelectorAll(".faq-answer-inner").forEach((el) => {
-          el.innerHTML = el.innerHTML
-            .replace(/TeamSyncAI/g, "HiringBlueprint")
-            .replace(/teamsyncai\.com/g, "joinhiringblueprint.com");
-        });
-
-        // Bottom CTA
-        const bottomCtaTitle = document.querySelector(".bottom-cta h2");
-        if (bottomCtaTitle) bottomCtaTitle.innerHTML = v.bottomCtaTitle;
-        const bottomCtaBody = document.querySelector(".bottom-cta > p");
-        if (bottomCtaBody) bottomCtaBody.innerHTML = v.bottomCtaBody;
-        const btnCta = document.querySelector(".btn-cta");
-        if (btnCta) btnCta.textContent = v.bottomCtaBtn;
-        const bottomMicrotrust = document.querySelector(".bottom-microtrust");
-        if (bottomMicrotrust) bottomMicrotrust.textContent = v.bottomMicrotrust;
-
-        // Footer
-        const footerLeft = document.querySelector(".footer-left");
-        if (footerLeft) footerLeft.textContent = v.footerLeft;
-        document.querySelectorAll(".footer-right a").forEach((a) => {
-          if (a.href.includes("privacy")) { a.href = v.privacyUrl; a.textContent = "Privacy Policy"; }
-          if (a.href.includes("terms")) { a.href = v.termsUrl; a.textContent = "Terms"; }
-        });
-
-        // Cookie banner legal link
-        const cookiePrivacyLink = document.querySelector(".cookie-text a");
-        if (cookiePrivacyLink) cookiePrivacyLink.href = v.privacyUrl;
-      }
-      // ────────────────────────────────────────────────────────────────────────
-
       async function fetchPageVariant() {
         try {
           const response = await fetch(`${AUTH_API}/page-variant`, { method: "GET", headers: { "Content-Type": "application/json" } });
@@ -626,8 +503,8 @@
         } catch (err) { console.warn("Error fetching page variant:", err); }
       }
 
-      document.addEventListener("DOMContentLoaded", function () { applyDomainVariant(); fetchPageVariant(); });
-      if (document.readyState === "loading") { document.addEventListener("DOMContentLoaded", function () { applyDomainVariant(); fetchPageVariant(); }); } else { applyDomainVariant(); fetchPageVariant(); }
+      document.addEventListener("DOMContentLoaded", fetchPageVariant);
+      if (document.readyState === "loading") { document.addEventListener("DOMContentLoaded", fetchPageVariant); } else { fetchPageVariant(); }
 
       const params = new URLSearchParams(window.location.search);
       const utmSource = params.get("utm_source") || "";

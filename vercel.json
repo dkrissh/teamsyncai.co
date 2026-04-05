@@ -1,16 +1,27 @@
 {
   "rewrites": [
     {
-      "source": "/demo",
-      "destination": "/demo.html"
+      "source": "/(.*)",
+      "has": [{"type": "host", "value": "teamsyncai.co"}],
+      "destination": "/teamsync/demo.html"
+    },
+    {
+      "source": "/(.*)",
+      "has": [{"type": "host", "value": "tryteamsyncai.com"}],
+      "destination": "/teamsync/demo.html"
+    },
+    {
+      "source": "/(.*)",
+      "has": [{"type": "host", "value": "buildhiringblueprint.com"}],
+      "destination": "/hiringblueprint/demo.html"
+    },
+    {
+      "source": "/(.*)",
+      "has": [{"type": "host", "value": "yourhiringblueprint.com"}],
+      "destination": "/hiringblueprint/demo.html"
     }
   ],
   "redirects": [
-    {
-      "source": "/",
-      "destination": "/demo",
-      "permanent": true
-    },
     {
       "source": "/legal/privacy",
       "destination": "https://teamsyncai.com/legal/privacy",
