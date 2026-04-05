@@ -494,26 +494,6 @@ nothing to commit, working tree clean
     <script>
       const TURNSTILE_SITE_KEY = "0x4AAAAAAA6GdaAB-8aAzYLn";
       const AUTH_API = "https://auth-api.teamsyncai.com/api/auth";
-      let currentVariant = null;
-
-      async function fetchPageVariant() {
-        try {
-          const response = await fetch(`${AUTH_API}/page-variant`, { method: "GET", headers: { "Content-Type": "application/json" } });
-          if (!response.ok) { console.warn("Failed to fetch variant, using defaults"); return; }
-          const data = await response.json();
-          const variant = data.data || data;
-          if (!variant) return;
-          currentVariant = { id: variant.id || variant.variant_id, version: variant.version || "default", heroTitle: variant.hero_title, heroSubtitle: variant.hero_subtitle, formTitle: variant.form_title, formSubtitle: variant.form_subtitle };
-          if (variant.hero_title) document.getElementById("hero-title").innerHTML = variant.hero_title;
-          if (variant.hero_subtitle) document.getElementById("hero-subtitle").innerHTML = variant.hero_subtitle;
-          if (variant.form_title) document.getElementById("form-title").textContent = variant.form_title;
-          if (variant.form_subtitle) document.getElementById("form-subtitle").textContent = variant.form_subtitle;
-        } catch (err) { console.warn("Error fetching page variant:", err); }
-      }
-
-      document.addEventListener("DOMContentLoaded", fetchPageVariant);
-      if (document.readyState === "loading") { document.addEventListener("DOMContentLoaded", fetchPageVariant); } else { fetchPageVariant(); }
-
       const params = new URLSearchParams(window.location.search);
       const utmSource = params.get("utm_source") || "";
       const utmCampaign = params.get("utm_campaign") || "";
@@ -611,7 +591,7 @@ nothing to commit, working tree clean
         if (!valid) return;
         const btn = document.getElementById("submit-btn");
         btn.classList.add("loading");
-        const payload = { name, email, legal: { terms_conditions: terms ? "accepted" : "", privacy: privacy ? "accepted" : "", name }, legalAcceptance: { name, terms, privacy }, plan_intent: { is_trial: true }, turnstileToken, source: { utm_source: utmSource, utm_campaign: utmCampaign, ref_email: refEmail, page: window.location.href, submitted_at: new Date().toISOString() }, ...(currentVariant && { variant: { id: currentVariant.id, version: currentVariant.version } }) };
+        const payload = { name, email, legal: { terms_conditions: terms ? "accepted" : "", privacy: privacy ? "accepted" : "", name }, legalAcceptance: { name, terms, privacy }, plan_intent: { is_trial: true }, turnstileToken, source: { utm_source: utmSource, utm_campaign: utmCampaign, ref_email: refEmail, page: window.location.href, submitted_at: new Date().toISOString() } };
         try {
           const controller = new AbortController();
           const timeout = setTimeout(() => controller.abort(), 10000);
