@@ -1,42 +1,42 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "has": [{"type": "host", "value": "teamsyncai.co"}],
       "destination": "/teamsync/demo.html"
     },
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "has": [{"type": "host", "value": "www.teamsyncai.co"}],
       "destination": "/teamsync/demo.html"
     },
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "has": [{"type": "host", "value": "tryteamsyncai.com"}],
       "destination": "/teamsync/demo.html"
     },
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "has": [{"type": "host", "value": "www.tryteamsyncai.com"}],
       "destination": "/teamsync/demo.html"
     },
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "has": [{"type": "host", "value": "buildhiringblueprint.com"}],
       "destination": "/hiringblueprint/demo.html"
     },
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "has": [{"type": "host", "value": "www.buildhiringblueprint.com"}],
       "destination": "/hiringblueprint/demo.html"
     },
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "has": [{"type": "host", "value": "yourhiringblueprint.com"}],
       "destination": "/hiringblueprint/demo.html"
     },
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "has": [{"type": "host", "value": "www.yourhiringblueprint.com"}],
       "destination": "/hiringblueprint/demo.html"
     }
