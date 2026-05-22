@@ -8,7 +8,17 @@
       function gtag() { dataLayer.push(arguments); }
       gtag("consent", "default", { analytics_storage: "denied", ad_storage: "denied" });
     </script>
-    <title>HiringBlueprint — Generate Your Interview Blueprint Free</title>
+    <title>TeamSyncAI — AI Hiring Software for Small Business | Free Interview Blueprint</title>
+    <meta name="description" content="Stop guessing who to hire. TeamSyncAI generates a free interview blueprint for your open role — interview questions, candidate rankings, and 30/60/90-day check-ins. Free to start, no credit card." />
+    <meta property="og:title" content="TeamSyncAI — Know Who to Hire Before They Walk In the Door" />
+    <meta property="og:description" content="Free interview blueprint for your open role. AI-ranked candidates, red flags from their own words, and 30/60/90-day check-ins. Built for small business." />
+    <meta property="og:image" content="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/landing-page-05-26/leader-board-app-05-19-2026_09_22_AM.png" />
+    <meta property="og:url" content="https://tryteamsyncai.com" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="TeamSyncAI — Know Who to Hire Before They Walk In the Door" />
+    <meta name="twitter:description" content="Free interview blueprint for your open role. AI-ranked candidates, red flags, and 30/60/90-day check-ins. Built for small business." />
+    <meta name="twitter:image" content="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/landing-page-05-26/leader-board-app-05-19-2026_09_22_AM.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/hiringblueprint/apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/hiringblueprint/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/hiringblueprint/favicon-16x16.png" />
@@ -17,6 +27,91 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+    <script type="application/ld+json" id="ld-app">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "TeamSyncAI",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "url": "https://tryteamsyncai.com",
+      "description": "AI hiring software for small businesses. Generates role-specific interview blueprints, ranks candidates by trust and performance, and automates 30/60/90-day post-hire check-ins.",
+      "offers": [
+        { "@type": "Offer", "name": "Trial", "price": "0", "priceCurrency": "USD", "description": "1 job posting, 500 AI credits, Hiring Intelligence included. No credit card required." },
+        { "@type": "Offer", "name": "Team Assessment Starter Monthly", "price": "99.00", "priceCurrency": "USD", "billingIncrement": "month", "description": "10 job positions, 5000 AI credits, Hiring Intelligence included." },
+        { "@type": "Offer", "name": "Team Assessment Starter Annual", "price": "990.00", "priceCurrency": "USD", "billingIncrement": "year", "description": "150 job positions, 75000 AI credits, Hiring Intelligence included, billed annually." }
+      ],
+      "creator": { "@type": "Organization", "name": "Datastruk Software Solutions", "url": "https://tryteamsyncai.com", "address": { "@type": "PostalAddress", "addressLocality": "Halifax", "addressRegion": "Nova Scotia", "addressCountry": "CA" } }
+    }
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", async function () {
+        try {
+          const res = await fetch("https://app-api.teamsyncai.com/api/public/packages/summary");
+          if (!res.ok) return;
+          const { data } = await res.json();
+          const pkgs = [...(data.trial || []), ...(data.subscription || [])];
+
+          // Update JSON-LD offers
+          const offers = pkgs.flatMap((pkg) =>
+            pkg.prices.map((price) => ({
+              "@type": "Offer",
+              name: price.displayName,
+              price: price.amount.toFixed(2),
+              priceCurrency: price.currency,
+              ...(price.interval !== "day" && { billingIncrement: price.interval }),
+              description: pkg.description,
+            }))
+          );
+          const ldEl = document.getElementById("ld-app");
+          if (ldEl && offers.length) {
+            const json = JSON.parse(ldEl.textContent);
+            json.offers = offers;
+            ldEl.textContent = JSON.stringify(json);
+          }
+
+          // Render pricing grid
+          const grid = document.getElementById("pricing-grid");
+          if (!grid) return;
+          const isTrial = (pkg) => pkg.packageType === "trial";
+          const formatPrice = (price) => {
+            if (price.amount === 0) return '<div class="pricing-price">$0</div>';
+            const interval = price.interval === "year" ? "/yr" : "/mo";
+            return `<div class="pricing-price"><sup>$</sup>${price.amount}<span>${interval}</span></div>`;
+          };
+          const cards = pkgs.flatMap((pkg) =>
+            pkg.prices.map((price) => {
+              const featured = isTrial(pkg);
+              const nocc = featured ? '<div class="pricing-no-cc">No credit card required</div>' : "";
+              const ctaClass = featured ? "pricing-cta" : "pricing-cta outline";
+              const ctaLabel = featured ? "Get Started Free" : "Get Started";
+              return `<div class="pricing-card${featured ? " featured" : ""}">
+  <div class="pricing-tier">${price.displayName}</div>
+  ${formatPrice(price)}
+  ${nocc}
+  <div class="pricing-desc">${pkg.description}</div>
+  <a href="https://app.teamsyncai.com/signup" class="${ctaClass}">${ctaLabel}</a>
+</div>`;
+            })
+          );
+          grid.innerHTML = cards.join("");
+        } catch (e) {}
+      });
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "What is a Hiring Blueprint?", "acceptedAnswer": { "@type": "Answer", "text": "A Hiring Blueprint is a complete interview kit generated by TeamSyncAI for a specific role. It includes weighted evaluation goals, behavioral interview questions with follow-up probes, a team fit profile, and 30/60/90-day check-in templates calibrated to the exact traits you hired against." } },
+        { "@type": "Question", "name": "Is the blueprint really free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Your first interview blueprint is completely free \u2014 one role, one time. No credit card required. You create a free account, answer a few questions about the role, and download your blueprint in about 15 minutes." } },
+        { "@type": "Question", "name": "Do I need HR experience to use TeamSyncAI?", "acceptedAnswer": { "@type": "Answer", "text": "No. TeamSyncAI is built for small business owners and managers who are hiring without a dedicated HR team. The calibration questions guide you through everything, and the AI generates all interview questions, evaluation goals, and check-in templates for you." } },
+        { "@type": "Question", "name": "How does candidate ranking work?", "acceptedAnswer": { "@type": "Answer", "text": "Candidates complete async video interviews via a unique link. TeamSyncAI evaluates their responses against the goals you set during calibration and ranks them on a leaderboard by trust score, performance score, and AI confidence rating. Red flags are surfaced from the candidates\u2019 own words." } },
+        { "@type": "Question", "name": "What are the 30/60/90-day check-ins?", "acceptedAnswer": { "@type": "Answer", "text": "After you hire someone, TeamSyncAI automatically schedules check-in questions at 30, 60, and 90 days. These are not generic templates \u2014 they are calibrated to the exact traits that candidate was evaluated against during the interview." } },
+        { "@type": "Question", "name": "Does the AI analyze body language or tone?", "acceptedAnswer": { "@type": "Answer", "text": "No. TeamSyncAI uses AI only to transcribe speech to text and evaluate what candidates say. The video is reviewed by humans only. No AI analyzes body language, tone of voice, or facial expressions." } }
+      ]
+    }
+    </script>
     <style>
       /* FULL CSS - unchanged from source */
       :root {
@@ -207,6 +302,67 @@
       .cookie-btn-accept:hover { background: #155c3e; box-shadow: 0 4px 12px rgba(26, 107, 74, 0.3); }
       .cookie-btn-decline { background: var(--surface); color: var(--ink); border: 1.5px solid var(--border); }
       .cookie-btn-decline:hover { background: var(--border); border-color: var(--ink-muted); }
+      /* New section styles */
+      .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; padding: 72px 0 80px; }
+      @media (max-width: 768px) { .hero { grid-template-columns: 1fr; gap: 48px; padding: 48px 0 56px; } }
+      .hero-img { width: 100%; border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow-lg); display: block; }
+      .hero-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-top: 8px; }
+      .feature-section { padding: 72px 0; border-top: 1px solid var(--border); opacity: 0; animation: fadeUp 0.6s ease 0.4s forwards; }
+      .feature-text { max-width: 620px; margin-bottom: 28px; }
+      .feature-text h2 { font-family: "Instrument Serif", serif; font-size: clamp(1.6rem, 2.5vw, 2.2rem); letter-spacing: -0.03em; color: var(--ink); margin-bottom: 16px; line-height: 1.15; }
+      .feature-text h2 em { font-style: italic; color: var(--accent); }
+      .feature-text p { font-size: 0.97rem; color: var(--ink-soft); font-weight: 300; line-height: 1.75; margin-bottom: 0; }
+      .feature-text .btn-cta-sm { display: inline-block; margin-top: 20px; padding: 13px 28px; background: var(--accent); color: white; border-radius: var(--radius); text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: background 0.2s, transform 0.15s, box-shadow 0.2s; }
+      .feature-text .btn-cta-sm:hover { background: #155c3e; box-shadow: 0 4px 20px rgba(26, 107, 74, 0.3); transform: translateY(-1px); }
+      .img-preview { position: relative; border-radius: 16px; border: 1px solid var(--border); background: var(--surface); overflow: hidden; box-shadow: var(--shadow-lg); }
+      .img-preview-inner { max-height: 280px; overflow: hidden; transition: max-height 0.55s cubic-bezier(0.4,0,0.2,1); }
+      .img-preview.is-expanded .img-preview-inner { max-height: 4000px; }
+      .img-preview img { width: 100%; display: block; }
+      .img-preview-fade { position: absolute; bottom: 36px; left: 0; right: 0; height: 96px; background: linear-gradient(to bottom, transparent, var(--surface) 90%); pointer-events: none; transition: opacity 0.3s; }
+      .img-preview.is-expanded .img-preview-fade { opacity: 0; }
+      .img-expand-btn { width: 100%; display: flex; justify-content: center; padding: 8px 0 10px; background: transparent; border: none; cursor: pointer; }
+      .img-expand-icon { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 600; color: var(--ink-muted); letter-spacing: 0.03em; background: white; border: 1px solid var(--border); border-radius: 40px; padding: 5px 14px 5px 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); transition: color 0.2s, border-color 0.2s; }
+      .img-expand-icon svg { transition: transform 0.35s ease; flex-shrink: 0; }
+      .img-preview.is-expanded .img-expand-icon svg { transform: rotate(180deg); }
+      .img-expand-btn:hover .img-expand-icon { color: var(--accent); border-color: var(--accent); }
+      .img-preview--mobile { max-width: 380px; }
+      .contrast-section { padding: 80px 0; border-top: 1px solid var(--border); opacity: 0; animation: fadeUp 0.6s ease 0.4s forwards; }
+      .contrast-section h2 { font-family: "Instrument Serif", serif; font-size: clamp(1.8rem, 3vw, 2.4rem); letter-spacing: -0.03em; color: var(--ink); margin-bottom: 12px; line-height: 1.15; }
+      .contrast-section h2 em { font-style: italic; color: var(--accent); }
+      .contrast-intro { font-size: 1rem; color: var(--ink-soft); font-weight: 300; max-width: 620px; line-height: 1.7; margin-bottom: 36px; }
+      .contrast-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+      @media (max-width: 640px) { .contrast-grid { grid-template-columns: 1fr; } }
+      .contrast-card { border: 1px solid var(--border); border-radius: 16px; overflow: hidden; background: var(--surface); box-shadow: var(--shadow-lg); }
+      .contrast-card-inner { max-height: 240px; overflow: hidden; transition: max-height 0.55s cubic-bezier(0.4,0,0.2,1); position: relative; }
+      .contrast-card.is-expanded .contrast-card-inner { max-height: 4000px; }
+      .contrast-card-inner img { width: 100%; display: block; }
+      .contrast-card-fade { position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: linear-gradient(to bottom, transparent, var(--surface) 90%); pointer-events: none; transition: opacity 0.3s; }
+      .contrast-card.is-expanded .contrast-card-fade { opacity: 0; }
+      .contrast-expand-btn { width: 100%; display: flex; justify-content: center; padding: 7px 0 9px; background: transparent; border: none; cursor: pointer; }
+      .contrast-expand-icon { display: flex; align-items: center; gap: 5px; font-size: 0.75rem; font-weight: 600; color: var(--ink-muted); letter-spacing: 0.03em; background: white; border: 1px solid var(--border); border-radius: 40px; padding: 4px 12px 4px 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); transition: color 0.2s, border-color 0.2s; }
+      .contrast-expand-icon svg { transition: transform 0.35s ease; flex-shrink: 0; }
+      .contrast-card.is-expanded .contrast-expand-icon svg { transform: rotate(180deg); }
+      .contrast-expand-btn:hover .contrast-expand-icon { color: var(--accent); border-color: var(--accent); }
+      .contrast-caption { margin-top: 24px; font-size: 0.9rem; color: var(--ink-muted); font-style: italic; text-align: center; line-height: 1.6; max-width: 640px; margin-left: auto; margin-right: auto; }
+      .pricing-section { padding: 80px 0; border-top: 1px solid var(--border); opacity: 0; animation: fadeUp 0.6s ease 0.4s forwards; }
+      .pricing-section h2 { font-family: "Instrument Serif", serif; font-size: clamp(1.8rem, 3vw, 2.4rem); letter-spacing: -0.03em; color: var(--ink); margin-bottom: 12px; line-height: 1.15; }
+      .pricing-intro { font-size: 1rem; color: var(--ink-soft); font-weight: 300; max-width: 540px; line-height: 1.7; margin-bottom: 48px; }
+      .pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+      @media (max-width: 900px) { .pricing-grid { grid-template-columns: repeat(2, 1fr); } }
+      @media (max-width: 480px) { .pricing-grid { grid-template-columns: 1fr; } }
+      .pricing-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 24px; display: flex; flex-direction: column; gap: 6px; transition: box-shadow 0.2s, transform 0.2s; }
+      .pricing-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+      .pricing-card.featured { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(26, 107, 74, 0.12); }
+      .pricing-tier { font-size: 0.7rem; font-weight: 700; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+      .pricing-price { font-family: "Instrument Serif", serif; font-size: 2.2rem; letter-spacing: -0.03em; color: var(--ink); line-height: 1; }
+      .pricing-price sup { font-family: "DM Sans", sans-serif; font-size: 1rem; font-weight: 600; vertical-align: top; margin-top: 6px; display: inline-block; }
+      .pricing-price span { font-family: "DM Sans", sans-serif; font-size: 0.82rem; color: var(--ink-muted); font-weight: 400; }
+      .pricing-desc { font-size: 0.82rem; color: var(--ink-soft); line-height: 1.55; margin-top: 8px; }
+      .pricing-no-cc { font-size: 0.75rem; color: var(--accent); font-weight: 600; margin-top: 6px; }
+      .pricing-cta { display: inline-block; margin-top: 16px; padding: 10px 20px; background: var(--accent); color: white; border-radius: var(--radius); text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: background 0.2s; }
+      .pricing-cta:hover { background: #155c3e; }
+      .pricing-cta.outline { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); }
+      .pricing-cta.outline:hover { background: var(--accent); color: white; }
     </style>
   </head>
   <body>
@@ -220,27 +376,16 @@
 
       <section class="hero">
         <div class="hero-left">
-          <h1 id="hero-title">
-            The hardest part of hiring isn't finding candidates —
-            <em>it's knowing which one is<br />right for your team.</em>
-          </h1>
-          <p class="hero-proof" id="hero-subtitle" style="margin-bottom: 24px">
-            Answer a few questions about the role. TeamSyncAI generates a complete Hiring Blueprint — so you know who to hire and whether it's working 30 days in.
+          <h1 id="hero-title">Stop guessing. <em>Know who to hire.</em></h1>
+          <p class="hero-proof" id="hero-subtitle">
+            TeamSyncAI ranks every candidate by performance, trust, and AI confidence — so the right person rises to the top.
           </p>
-          <a href="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/hiring-guide-26-03/sample-hiring-guide.pdf" target="_blank" class="btn-sample" style="margin-bottom: 16px; display: inline-flex;" onclick="if(typeof gtag==='function'){gtag('event','file_download',{file_name:'sample-hiring-guide.pdf',link_text:'See the full example',location:'hero'});}">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-            See the full example →
-          </a>
-          <div class="micro-trust">
-            About 5 minutes <span>·</span> Free beta <span>·</span> No credit card
-          </div>
+          <div class="micro-trust">Free · No credit card · 1 role, one time</div>
         </div>
 
-        <div class="form-card">
-          <div class="form-title" id="form-title">Generate your interview blueprint</div>
-          <div class="form-subtitle" id="form-subtitle">
-            Add your role. Answer a few questions. Your blueprint is ready in minutes — free.
-          </div>
+        <div class="form-card" id="form-card">
+          <div class="form-title" id="form-title">Build Your Hiring Blueprint</div>
+          <div class="form-subtitle" id="form-subtitle">Your Hiring Blueprint drives every interview — free for your first role.</div>
 
           <div class="success-panel" id="success-panel">
             <div class="success-icon">
@@ -249,8 +394,8 @@
               </svg>
             </div>
             <h3>You're in.</h3>
-            <p>Taking you to HiringBlueprint now — your interview blueprint will be ready once you add your role.</p>
-            <a href="#" class="btn-secondary" id="redirect-btn">Open HiringBlueprint →</a>
+            <p>Taking you to TeamSyncAI now — your blueprint will be ready once you add your role.</p>
+            <a href="#" class="btn-secondary" id="redirect-btn">Open TeamSyncAI →</a>
           </div>
 
           <div class="form-fields" id="form-fields">
@@ -291,7 +436,7 @@
                 <div id="turnstile-container" style="display: flex; justify-content: center; min-height: 65px;"></div>
               </div>
               <button type="submit" class="btn-primary" id="submit-btn" disabled>
-                <span class="btn-text">Build My Blueprint — Free →</span>
+                <span class="btn-text">Build Your First Interview — Free →</span>
                 <span class="btn-loader"><span class="spinner"></span></span>
               </button>
             </form>
@@ -299,102 +444,155 @@
         </div>
       </section>
 
-      <section class="output-preview">
-        <div class="output-preview-inner">
-          <div class="output-preview-header">
-            <div class="output-preview-tag">Example Output</div>
-            <div class="output-preview-caption">Interview questions generated for an Operations Manager role — AI-built, linked to evaluation goals</div>
+      <!-- Section 2: Calibration -->
+      <section class="feature-section">
+        <div class="feature-text">
+          <div class="section-label">Step 1</div>
+          <h2>Answer a few questions about the role. <em>We handle everything else.</em></h2>
+          <p>Tell us who succeeds in this role, what failure looks like, and how much autonomy it requires. Takes 5 minutes.</p>
+        </div>
+        <div class="img-preview">
+          <div class="img-preview-inner">
+            <img
+              src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/landing-page-05-26/calibration_questions_08_59_PM.png"
+              alt="TeamSyncAI calibration questions screen showing probing questions with sample answer options for a role"
+              loading="lazy"
+            />
           </div>
-          <img src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/hiring-guide-26-03/app-screenshot-preview-interview-questions.png" alt="Example interview questions generated by HiringBlueprint — showing main question, linked evaluation goal, and follow-up probes" class="output-preview-img" loading="eager" />
+          <div class="img-preview-fade"></div>
+          <button class="img-expand-btn" onclick="togglePreview(this)" aria-label="Expand image">
+            <span class="img-expand-icon">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              <span class="expand-label">Expand</span>
+            </span>
+          </button>
         </div>
       </section>
 
-      <div class="curiosity-bridge">
-        <p>Interview questions are just one part.<br /><em>Here is everything the Hiring Blueprint generates.</em></p>
-        <span class="curiosity-arrow">↓</span>
-      </div>
-
-      <hr class="section-divider" />
-
-      <section class="output-section">
-        <div class="section-label">What you'll receive</div>
-        <h2>For your open role,<br /><em>we generate all of this.</em></h2>
-        <p class="output-intro">Not a template. Not a checklist. A complete AI-built Hiring Blueprint calibrated to your exact role, team, and how success actually looks for you.</p>
-        <div class="output-grid">
-          <div class="output-item"><div class="output-check"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg></div><div class="output-text"><strong>Role Complexity Analysis</strong>Autonomy level, decision scope, and leadership expectations — defined before you write a single question.</div></div>
-          <div class="output-item"><div class="output-check"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg></div><div class="output-text"><strong>30/60/90 Day Success Indicators</strong>Concrete outcomes that define what a good hire looks like — before you start interviewing.</div></div>
-          <div class="output-item"><div class="output-check"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg></div><div class="output-text"><strong>Failure Risk Signals</strong>The patterns that predict a bad hire for this specific role — so you know what to watch for.</div></div>
-          <div class="output-item"><div class="output-check"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg></div><div class="output-text"><strong>Weighted Evaluation Goals</strong>What matters most for this hire, ranked and weighted — so every candidate gets a fair, consistent review.</div></div>
-          <div class="output-item"><div class="output-check"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg></div><div class="output-text"><strong>Behavioural Interview Questions</strong>Mapped to your evaluation goals — not generic questions copied from a blog post.</div></div>
-          <div class="output-item"><div class="output-check"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg></div><div class="output-text"><strong>Follow-Up Probes</strong>What to ask when answers get vague — so you never leave an interview wondering what just happened.</div></div>
-          <div class="output-item"><div class="output-check"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg></div><div class="output-text"><strong>Must-Have vs. Nice-to-Have</strong>Clearly separated — so you stop rejecting good candidates for the wrong reasons.</div></div>
-          <div class="output-item"><div class="output-check"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg></div><div class="output-text"><strong>Post-Hire Check-In Questions</strong>Automated at 30, 60, and 90 days — tied to the goals you set, so you know if the hire is working.</div></div>
-          <div class="output-item"><div class="output-check"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg></div><div class="output-text"><strong>A Ready-to-Use Interview Framework</strong>Everything above, structured into a 15-minute async interview you can run immediately.</div></div>
+      <!-- Section 3: Evaluation Goals -->
+      <section class="feature-section">
+        <div class="feature-text">
+          <div class="section-label">Step 2</div>
+          <h2>Not generic templates. <em>Goals built for this exact role.</em></h2>
+          <p>Every evaluation goal is weighted and tied to what you told us matters — so you know what to look for and how much it counts.</p>
+        </div>
+        <div class="img-preview">
+          <div class="img-preview-inner">
+            <img
+              src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/landing-page-05-26/evalution-goals-05-18-2026_09_00_PM.png"
+              alt="TeamSyncAI AI-generated evaluation goals screen showing weighted hiring criteria specific to the role"
+              loading="lazy"
+            />
+          </div>
+          <div class="img-preview-fade"></div>
+          <button class="img-expand-btn" onclick="togglePreview(this)" aria-label="Expand image">
+            <span class="img-expand-icon">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              <span class="expand-label">Expand</span>
+            </span>
+          </button>
         </div>
       </section>
 
-      <section class="how-section">
-        <div class="section-label">How it works</div>
-        <h2>Three steps.<br /><em>One Hiring Blueprint.</em></h2>
-        <p class="how-intro">Most hiring tools give you a template and wish you luck. HiringBlueprint builds an interview blueprint around your specific role — then keeps working after the hire.</p>
+      <!-- Section 4: Interview Questions -->
+      <section class="feature-section">
+        <div class="feature-text">
+          <div class="section-label">Step 3</div>
+          <h2>Questions that actually <em>reveal who you're hiring.</em></h2>
+          <p>Every question is tied to an evaluation goal. Follow-up probes are ready when an answer needs digging into. No experience required.</p>
+        </div>
+        <div class="img-preview">
+          <div class="img-preview-inner">
+            <img
+              src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/landing-page-05-26/interview-questions-05-18-2026_09_01_PM.png"
+              alt="TeamSyncAI interview questions screen showing behavioral questions linked to evaluation goals with follow-up probe suggestions"
+              loading="lazy"
+            />
+          </div>
+          <div class="img-preview-fade"></div>
+          <button class="img-expand-btn" onclick="togglePreview(this)" aria-label="Expand image">
+            <span class="img-expand-icon">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              <span class="expand-label">Expand</span>
+            </span>
+          </button>
+        </div>
+      </section>
 
-        <div class="steps">
-          <div class="step">
-            <div class="step-num">1</div>
-            <div>
-              <div class="step-tag">Before the interview</div>
-              <div class="step-title">We calibrate the role with AI.</div>
-              <div class="step-body">
-                <p>We start by asking you the questions most hiring managers have never been asked. What does success look like at 90 days — specifically? What kind of person always fails in this role? How much autonomy does this role actually require in the first 30 days?</p>
-                <p><strong>Your answers train the AI on your exact hire.</strong> Not on a job title. Not on an industry average. On the specific reality of your team and this role.</p>
-                <p>The AI asks between 5 and 10 probing questions depending on role complexity — a straightforward role takes fewer, a management or technical role goes deeper.</p>
-              </div>
+      <!-- Section 5: Candidate Contrast -->
+      <section class="contrast-section">
+        <h2>Know who to hire. Know who to avoid. <em>See exactly why.</em></h2>
+        <p class="contrast-intro">Every candidate is evaluated against the goals you set. Red flags are quoted directly from their own answers — not guesswork.</p>
+        <div class="contrast-grid">
+          <div class="contrast-card">
+            <div class="contrast-card-inner">
               <img
-                src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/hiring-guide-26-03/app-screenshot-job-input.png"
-                alt="Add your role in HiringBlueprint"
-                class="screenshot"
+                src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/landing-page-05-26/hirable-candidate-pp-05-19-2026_10_01_AM.png"
+                alt="TeamSyncAI candidate evaluation showing STRONG HIRE recommendation with trust score 8.5 and performance score 8.5"
                 loading="lazy"
               />
+              <div class="contrast-card-fade"></div>
             </div>
+            <button class="contrast-expand-btn" onclick="toggleContrast(this)" aria-label="Expand candidate evaluation">
+              <span class="contrast-expand-icon">
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                <span class="expand-label">Expand</span>
+              </span>
+            </button>
           </div>
-
-          <div class="step">
-            <div class="step-num">2</div>
-            <div>
-              <div class="step-tag">During the interview</div>
-              <div class="step-title">AI builds your complete interview system.</div>
-              <div class="step-body">
-                <p>From your calibration answers, the AI generates weighted evaluation goals, behavioural interview questions mapped to outcomes, and follow-up probes for when answers get vague.</p>
-                <p><strong>Every candidate gets evaluated the same way.</strong> Not based on who had a better Tuesday. Not on gut feel. On criteria you defined before the first resume came in.</p>
-              </div>
+          <div class="contrast-card">
+            <div class="contrast-card-inner">
               <img
-                src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/hiring-guide-26-03/step-3-answer-questions.png"
-                alt="Answer probing questions — the AI calibrates to your specific role and team"
-                class="screenshot"
+                src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/landing-page-05-26/toxic-candidate-05-19-2026_10_01_AM.png"
+                alt="TeamSyncAI candidate evaluation showing NO HIRE recommendation with trust score 2.0 and five high-severity red flags"
                 loading="lazy"
-                style="margin-top: 24px"
               />
+              <div class="contrast-card-fade"></div>
             </div>
+            <button class="contrast-expand-btn" onclick="toggleContrast(this)" aria-label="Expand candidate evaluation">
+              <span class="contrast-expand-icon">
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                <span class="expand-label">Expand</span>
+              </span>
+            </button>
           </div>
+        </div>
+        <p class="contrast-caption">Same interview. Same questions. The AI reads what the answers actually reveal — not what the candidate wants you to hear.</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; justify-content: center;">
+          <a href="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/landing-page-05-26/detailed-report-jordan-selfstarter-e9918a.pdf" target="_blank" class="btn-sample" onclick="if(typeof gtag==='function'){gtag('event','file_download',{file_name:'detailed-report-jordan-selfstarter-e9918a.pdf',link_text:'Download Jordan\'s full report',location:'contrast_section'});}">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            Download Jordan’s full report →
+          </a>
+          <a href="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/landing-page-05-26/detailed-report-chad-toxic-14c1f5.pdf" target="_blank" class="btn-sample" onclick="if(typeof gtag==='function'){gtag('event','file_download',{file_name:'detailed-report-chad-toxic-14c1f5.pdf',link_text:'Download Chad\'s full report',location:'contrast_section'});}">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            Download Chad’s full report →
+          </a>
+        </div>
+      </section>
 
-          <div class="step">
-            <div class="step-num">3</div>
-            <div>
-              <div class="step-tag">After the hire</div>
-              <div class="step-title">AI tells you if you were right.</div>
-              <div class="step-body">
-                <p>Most hiring tools stop at the offer letter. HiringBlueprint sends you check-in questions at 30, 60, and 90 days — tied to the exact success indicators you defined at the start.</p>
-                <p><strong>Over time, the AI learns what good hiring looks like for your team specifically.</strong> Every hire you make improves the next one.</p>
-              </div>
-              <img
-                src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/hiring-guide-26-03/step-7-hiring-pattern.png"
-                alt="Hiring Patterns — AI tracks retention rate, rehire rate, and performance trends so every future hire gets smarter"
-                class="screenshot"
-                loading="lazy"
-                style="margin-top: 24px"
-              />
-            </div>
+      <!-- Section 6: Blueprint Download -->
+      <section class="feature-section">
+        <div class="feature-text">
+          <div class="section-label">Your Blueprint</div>
+          <h2>Your Hiring Blueprint. <em>Included with your first interview — free.</em></h2>
+          <p>Interview questions, weighted scoring, and 30/60/90-day check-ins generated for your exact role. Download as PDF or run it as an async interview today.</p>
+          <button class="btn-cta-sm" onclick="document.getElementById('form-card').scrollIntoView({behavior:'smooth',block:'center'})">Start Your First Interview — Free →</button>
+        </div>
+        <div class="img-preview">
+          <div class="img-preview-inner">
+            <img
+              src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/landing-page-05-26/page-overview-05-18-2026_09_02_PM.png"
+              alt="TeamSyncAI overview screen showing the complete downloadable hiring kit for a role"
+              loading="lazy"
+            />
           </div>
+          <div class="img-preview-fade"></div>
+          <button class="img-expand-btn" onclick="togglePreview(this)" aria-label="Expand image">
+            <span class="img-expand-icon">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              <span class="expand-label">Expand</span>
+            </span>
+          </button>
         </div>
       </section>
 
@@ -414,23 +612,23 @@
             </div>
             <div class="sample-prompt">
               <span>Input used for this example</span>
-              "Looking for an Operations Manager, 3-5 years experience, small professional services firm. Need someone who can own vendor relationships and keep projects on track without me being involved."
+              “Looking for an Operations Manager, 3-5 years experience, small professional services firm. Need someone who can own vendor relationships and keep projects on track without me being involved.”
             </div>
-            <p class="sample-judge">Here's a real Blueprint from the two-line description above.</p>
+            <p class="sample-judge">Here’s a real Blueprint from the two-line description above.</p>
             <a href="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/hiring-guide-26-03/sample-hiring-guide.pdf" target="_blank" class="btn-sample" onclick="if(typeof gtag==='function'){gtag('event','file_download',{file_name:'sample-hiring-guide.pdf',link_text:'Free download - see the full example',location:'sample_section'});}">
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
               Free download — see the full example →
             </a>
             <div style="margin: 24px 0; display: flex; align-items: center; gap: 12px;">
               <div style="flex: 1; height: 1px; background: var(--border);"></div>
-              <span style="font-size: 0.72rem; font-weight: 700; color: var(--ink-muted); letter-spacing: 0.08em; text-transform: uppercase;">Or generate yours</span>
+              <span style="font-size: 0.72rem; font-weight: 700; color: var(--ink-muted); letter-spacing: 0.08em; text-transform: uppercase;">Or start yours</span>
               <div style="flex: 1; height: 1px; background: var(--border);"></div>
             </div>
-            <p class="sample-sub">Generate a hiring blueprint for your open role and evaluate it yourself.</p>
-            <a href="#" class="btn-primary" style="display: inline-flex; align-items: center; gap: 8px; width: auto; padding: 13px 22px; margin-top: 0; text-decoration: none; font-size: 0.9rem;" onclick="document.getElementById('name').scrollIntoView({ behavior: 'smooth' }); document.getElementById('name').focus(); return false;">
-              Build Your Blueprint →
-            </a>
-            <div style="margin-top: 10px; font-size: 0.78rem; color: var(--ink-muted);">About 5 minutes · No credit card</div>
+            <p class="sample-sub">Lead every async video interview with a Hiring Blueprint built for your exact role.</p>
+            <button class="btn-primary" style="display: inline-flex; align-items: center; gap: 8px; width: auto; padding: 13px 22px; margin-top: 0; font-size: 0.9rem;" onclick="document.getElementById('form-card').scrollIntoView({behavior:'smooth',block:'center'})">
+              Build Your First Interview — Free →
+            </button>
+            <div style="margin-top: 10px; font-size: 0.78rem; color: var(--ink-muted);">About 5 minutes · Free · No credit card</div>
           </div>
           <div class="sample-right">
             <div class="sample-pages">
@@ -442,51 +640,111 @@
         </div>
       </section>
 
+      <!-- Section 7: Hiring Intelligence -->
+      <section class="feature-section">
+        <div class="feature-text">
+          <div class="section-label">After the hire</div>
+          <h2>Most hiring tools stop at the offer letter. <em>Yours doesn't.</em></h2>
+          <p>Automated 30, 60, and 90-day check-ins calibrated to the exact traits you hired against. Know at day 30 if it's working — not after three months of hoping.</p>
+        </div>
+        <div class="img-preview">
+          <div class="img-preview-inner">
+            <img
+              src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/landing-page-05-26/hiring-interlligence-App-05-18-2026_09_04_PM.png"
+              alt="TeamSyncAI Hiring Intelligence screen showing automated 30/60/90-day check-in schedule for hired candidates"
+              loading="lazy"
+            />
+          </div>
+          <div class="img-preview-fade"></div>
+          <button class="img-expand-btn" onclick="togglePreview(this)" aria-label="Expand image">
+            <span class="img-expand-icon">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              <span class="expand-label">Expand</span>
+            </span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Section 8: Privacy Statement -->
+      <section class="feature-section">
+        <div class="feature-text">
+          <div class="section-label">Transparency</div>
+          <h2>AI that's transparent about what it does — <em>and what it doesn't.</em></h2>
+          <p>We analyze what candidates say, not how they look. No body language scoring. No tone analysis. Just honest evaluation of real answers.</p>
+        </div>
+        <div class="img-preview img-preview--mobile">
+          <div class="img-preview-inner">
+            <img
+              src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/landing-page-05-26/IMG_1643.png"
+              alt="TeamSyncAI privacy protection statement shown to candidates — AI used only for transcription, no body language or tone analysis"
+              loading="lazy"
+            />
+          </div>
+          <div class="img-preview-fade"></div>
+          <button class="img-expand-btn" onclick="togglePreview(this)" aria-label="Expand image">
+            <span class="img-expand-icon">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              <span class="expand-label">Expand</span>
+            </span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Section 9: Pricing -->
+      <section class="pricing-section">
+        <div class="section-label">Pricing</div>
+        <h2>Simple pricing. <em>Start free.</em></h2>
+        <p class="pricing-intro">One role, one time — completely free. No credit card required. Upgrade when you're ready to hire more.</p>
+        <div class="pricing-grid" id="pricing-grid">
+          <div class="pricing-card featured" style="grid-column:1/-1;opacity:.5;font-size:.85rem;color:var(--ink-muted);text-align:center;padding:32px;">Loading pricing…</div>
+        </div>
+      </section>
+
       <section class="faq-section">
         <h2>Questions you're probably thinking.</h2>
         <div class="faq-list">
           <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)">Is this actually free?<div class="faq-icon"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></div></button>
-            <div class="faq-answer"><div class="faq-answer-inner">Yes — generating your Hiring Blueprint and running your first hiring cycle is completely free. No credit card, no trial expiry, no sales call.</div></div>
+            <button class="faq-question" onclick="toggleFaq(this)">How does TeamSyncAI work?<div class="faq-icon"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></div></button>
+            <div class="faq-answer"><div class="faq-answer-inner">You answer a few questions about the role you're hiring for. TeamSyncAI generates a Hiring Blueprint — interview questions, weighted scoring, and 30/60/90-day check-ins calibrated to your exact role. Candidates complete an async video interview via a unique link on any device, on their own time. You come back to a ranked leaderboard. No scheduling, no guessing.</div></div>
           </div>
           <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)">Do I need to replace how we currently hire?<div class="faq-icon"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></div></button>
-            <div class="faq-answer"><div class="faq-answer-inner">No. HiringBlueprint is additive — it works alongside whatever you're already doing. Use the blueprint in your existing process. Run the async interviews or don't. The calibration and questions are valuable on their own, even if you never change anything else.</div></div>
+            <button class="faq-question" onclick="toggleFaq(this)">What is a Hiring Blueprint?<div class="faq-icon"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></div></button>
+            <div class="faq-answer"><div class="faq-answer-inner">A Hiring Blueprint is the complete hiring kit TeamSyncAI generates for your specific role. It includes weighted evaluation goals, behavioral interview questions with follow-up probes, and 30/60/90-day check-in templates tied to the exact traits you hired against. It's built from your answers — not copied from a generic template.</div></div>
           </div>
           <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)">What if I don't have a formal job description?<div class="faq-icon"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></div></button>
-            <div class="faq-answer"><div class="faq-answer-inner">That's fine — and honestly pretty common. A rough description works. Something like "looking for a hungry SDR, 1-2 years B2B SaaS experience" is enough to get started. The calibration questions we ask you will fill in the gaps the AI needs.</div></div>
+            <button class="faq-question" onclick="toggleFaq(this)">Is it really free?<div class="faq-icon"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></div></button>
+            <div class="faq-answer"><div class="faq-answer-inner">Yes. One role, one time — completely free. No credit card required. The whole process takes about 15 minutes from start to finished Blueprint and interview ready to send.</div></div>
           </div>
           <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)">How is this different from a template or a ChatGPT prompt?<div class="faq-icon"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></div></button>
-            <div class="faq-answer"><div class="faq-answer-inner">Templates and prompts give you generic output. HiringBlueprint calibrates to <strong>your specific answers</strong> — what success looks like on your team, what failure looks like, how much autonomy this role really needs. The questions it generates are mapped to evaluation goals weighted by what you told us actually matters. That's not something a template can do.</div></div>
+            <button class="faq-question" onclick="toggleFaq(this)">Do I need HR experience?<div class="faq-icon"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></div></button>
+            <div class="faq-answer"><div class="faq-answer-inner">No. TeamSyncAI is built for small business owners hiring without an HR team. You answer questions about your business and the role — the AI handles the evaluation framework, the interview questions, and the scoring.</div></div>
           </div>
           <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)">Who sees my data?<div class="faq-icon"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></div></button>
-            <div class="faq-answer"><div class="faq-answer-inner">Your data is yours. We don't sell it, share it between customers, or use it for advertising. Your hiring data and candidate responses are private to your account. Full details in our <a href="https://teamsyncai.com/legal/privacy" target="_blank">Privacy Policy</a>.</div></div>
+            <button class="faq-question" onclick="toggleFaq(this)">How does candidate ranking work?<div class="faq-icon"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></div></button>
+            <div class="faq-answer"><div class="faq-answer-inner">Candidates complete an async video interview using the questions generated for your role. TeamSyncAI evaluates their responses against the goals you set and ranks them on a leaderboard by trust score, performance score, and AI confidence. Red flags are quoted directly from their own words — not guesswork.</div></div>
           </div>
           <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)">We already use a recruiter. Is this still useful?<div class="faq-icon"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></div></button>
-            <div class="faq-answer"><div class="faq-answer-inner">Yes — recruiters find candidates. HiringBlueprint helps you evaluate them. The calibration, interview questions, and post-hire check-ins are things most recruiters don't provide. They're complementary, not competing.</div></div>
+            <button class="faq-question" onclick="toggleFaq(this)">What are the 30/60/90-day check-ins?<div class="faq-icon"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></div></button>
+            <div class="faq-answer"><div class="faq-answer-inner">After you make a hire, TeamSyncAI sends automated check-in questions at 30, 60, and 90 days. Each check-in is calibrated to the exact traits the candidate was evaluated against — so you know early whether the hire is working, not after months of uncertainty.</div></div>
           </div>
           <div class="faq-item">
-            <button class="faq-question" onclick="toggleFaq(this)">Why are you giving this away for free?<div class="faq-icon"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></div></button>
-            <div class="faq-answer"><div class="faq-answer-inner">We're launching HiringBlueprint and looking for hiring teams willing to use the system on a real role and give us feedback. You get a genuinely useful interview blueprint. We get to learn what works. That's the deal — no hidden catch, no aggressive upsell.</div></div>
+            <button class="faq-question" onclick="toggleFaq(this)">Does the AI analyze body language or tone?<div class="faq-icon"><svg fill="none" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></div></button>
+            <div class="faq-answer"><div class="faq-answer-inner">No. TeamSyncAI only analyzes what candidates say — not how they look or sound. Video is transcribed to text and the AI evaluates the content of answers only. No body language scoring, no tone analysis, no facial expression tracking.</div></div>
           </div>
         </div>
       </section>
 
       <section class="bottom-cta">
         <h2>Your next hire deserves<br />a <em>better blueprint.</em></h2>
-        <p>Generate your interview blueprint for free.<br />No credit card. No sales call. Use it in your current hiring cycle.</p>
-        <a href="#" class="btn-cta" onclick="document.getElementById('name').scrollIntoView({ behavior: 'smooth' }); document.getElementById('name').focus(); return false;">
-          Build Your Blueprint — Free
-        </a>
-        <div class="bottom-microtrust">Free · Takes under 5 minutes · Built for your exact role</div>
+        <p>Lead every async video interview with a Hiring Blueprint — so you know who to hire and whether it's working 30 days in.</p>
+        <button class="btn-cta" onclick="document.getElementById('form-card').scrollIntoView({behavior:'smooth',block:'center'})">
+          Build Your First Interview — Free
+        </button>
+        <div class="bottom-microtrust">Free · No credit card · Built for your exact role</div>
       </section>
 
       <footer>
-        <div class="footer-left">© 2026 HiringBlueprint · Halifax, NS</div>
+        <div class="footer-left">© 2026 TeamSyncAI · Halifax, NS</div>
         <div class="footer-right">
           <a href="https://teamsyncai.com/legal/privacy" target="_blank">Privacy Policy</a>
           &nbsp;·&nbsp;
@@ -496,8 +754,41 @@
     </div>
 
     <script>
+      function togglePreview(btn) {
+        const preview = btn.closest('.img-preview');
+        preview.classList.toggle('is-expanded');
+        const lbl = btn.querySelector('.expand-label');
+        if (lbl) lbl.textContent = preview.classList.contains('is-expanded') ? 'Collapse' : 'Expand';
+      }
+      function toggleContrast(btn) {
+        const card = btn.closest('.contrast-card');
+        card.classList.toggle('is-expanded');
+        const lbl = btn.querySelector('.expand-label');
+        if (lbl) lbl.textContent = card.classList.contains('is-expanded') ? 'Collapse' : 'Expand';
+      }
+      function toggleFaq(btn) {
+        btn.closest(".faq-item").classList.toggle("open");
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".img-preview").forEach(function (el) {
+          el.classList.add("is-expanded");
+          const lbl = el.querySelector(".expand-label");
+          if (lbl) lbl.textContent = "Collapse";
+        });
+        document.querySelectorAll(".contrast-card").forEach(function (el) {
+          el.classList.add("is-expanded");
+          const lbl = el.querySelector(".expand-label");
+          if (lbl) lbl.textContent = "Collapse";
+        });
+        document.querySelectorAll(".faq-item").forEach(function (el) {
+          el.classList.add("open");
+        });
+      });
+
       const TURNSTILE_SITE_KEY = "0x4AAAAAAA6GdaAB-8aAzYLn";
       const AUTH_API = "https://auth-api.teamsyncai.com/api/auth";
+
       const params = new URLSearchParams(window.location.search);
       const utmSource = params.get("utm_source") || "";
       const utmCampaign = params.get("utm_campaign") || "";
@@ -571,13 +862,6 @@
       function setFieldError(groupId, show) { document.getElementById(groupId).classList.toggle("has-error", show); }
       function showGlobalError(msg) { const el = document.getElementById("global-error"); el.textContent = msg; el.classList.add("visible"); }
       function hideGlobalError() { document.getElementById("global-error").classList.remove("visible"); }
-
-      function toggleFaq(btn) {
-        const item = btn.closest(".faq-item");
-        const isOpen = item.classList.contains("open");
-        document.querySelectorAll(".faq-item.open").forEach((el) => el.classList.remove("open"));
-        if (!isOpen) item.classList.add("open");
-      }
 
       document.getElementById("lead-form").addEventListener("submit", async function (e) {
         e.preventDefault();
