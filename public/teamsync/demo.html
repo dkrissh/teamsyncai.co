@@ -1219,21 +1219,19 @@
         align-items: center;
         gap: 8px;
         padding: 12px 22px;
-        background: var(--white);
-        border: 1.5px solid var(--accent);
+        background: #e8500a;
+        border: none;
         border-radius: var(--radius);
-        color: var(--accent);
+        color: #fff;
         font-family: "DM Sans", sans-serif;
         font-size: 0.88rem;
         font-weight: 600;
         text-decoration: none;
-        transition:
-          background 0.2s,
-          color 0.2s;
+        transition: background 0.2s;
       }
       .btn-sample:hover {
-        background: var(--accent);
-        color: white;
+        background: #c94208;
+        color: #fff;
       }
       .sample-right {
         position: relative;
@@ -1634,13 +1632,9 @@
         box-shadow: var(--shadow-lg);
       }
       .contrast-card-inner {
-        max-height: 240px;
-        overflow: hidden;
-        transition: max-height 0.55s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
-      }
-      .contrast-card.is-expanded .contrast-card-inner {
-        max-height: 4000px;
+        max-height: 480px;
+        overflow: hidden;
       }
       .contrast-card-inner img {
         width: 100%;
@@ -1651,13 +1645,9 @@
         bottom: 0;
         left: 0;
         right: 0;
-        height: 80px;
+        height: 140px;
         background: linear-gradient(to bottom, transparent, var(--surface) 90%);
         pointer-events: none;
-        transition: opacity 0.3s;
-      }
-      .contrast-card.is-expanded .contrast-card-fade {
-        opacity: 0;
       }
       .contrast-expand-btn {
         width: 100%;
@@ -1695,6 +1685,31 @@
       .contrast-expand-btn:hover .contrast-expand-icon {
         color: var(--accent);
         border-color: var(--accent);
+      }
+      .contrast-card-download {
+        position: absolute;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 3;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 18px;
+        background: #e8500a;
+        color: #fff;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.82rem;
+        font-weight: 700;
+        border-radius: 100px;
+        text-decoration: none;
+        white-space: nowrap;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.22);
+        transition: background 0.2s;
+      }
+      .contrast-card-download:hover {
+        background: #c94208;
+        color: #fff;
       }
       .contrast-caption {
         margin-top: 24px;
@@ -2208,108 +2223,75 @@
           Every candidate is evaluated against the goals you set. Red flags are
           quoted directly from their own answers — not guesswork.
         </p>
-        <div class="contrast-grid">
-          <div class="contrast-card">
-            <div class="contrast-card-inner">
-              <img
-                src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/landing-page-05-26/hirable-candidate-pp-05-19-2026_10_01_AM.png"
-                alt="TeamSyncAI candidate evaluation showing STRONG HIRE recommendation with trust score 8.5 and performance score 8.5"
-                loading="lazy"
-              />
-              <div class="contrast-card-fade"></div>
-            </div>
-            <button
-              class="contrast-expand-btn"
-              onclick="toggleContrast(this)"
-              aria-label="Expand candidate evaluation"
-            >
-              <span class="contrast-expand-icon">
-                <svg
-                  width="14"
-                  height="14"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  stroke-width="2.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-                <span class="expand-label">Expand</span>
-              </span>
-            </button>
-          </div>
-          <div class="contrast-card">
-            <div class="contrast-card-inner">
-              <img
-                src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/landing-page-05-26/toxic-candidate-05-19-2026_10_01_AM.png"
-                alt="TeamSyncAI candidate evaluation showing NO HIRE recommendation with trust score 2.0 and five high-severity red flags"
-                loading="lazy"
-              />
-              <div class="contrast-card-fade"></div>
-            </div>
-            <button
-              class="contrast-expand-btn"
-              onclick="toggleContrast(this)"
-              aria-label="Expand candidate evaluation"
-            >
-              <span class="contrast-expand-icon">
-                <svg
-                  width="14"
-                  height="14"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  stroke-width="2.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-                <span class="expand-label">Expand</span>
-              </span>
-            </button>
-          </div>
-        </div>
         <p class="contrast-caption">
           Same interview. Same questions. The AI reads what the answers actually
           reveal — not what the candidate wants you to hear.
         </p>
-        <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; justify-content: center;">
-          <a href="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/landing-page-05-26/detailed-report-jordan-selfstarter-e9918a.pdf" target="_blank" class="btn-sample" onclick="if(typeof gtag==='function'){gtag('event','file_download',{file_name:'detailed-report-jordan-selfstarter-e9918a.pdf',link_text:'Download Jordan\'s full report',location:'contrast_section'});}">
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-            Download Jordan’s full report →
-          </a>
-          <a href="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/landing-page-05-26/detailed-report-chad-toxic-14c1f5.pdf" target="_blank" class="btn-sample" onclick="if(typeof gtag==='function'){gtag('event','file_download',{file_name:'detailed-report-chad-toxic-14c1f5.pdf',link_text:'Download Chad\'s full report',location:'contrast_section'});}">
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-            Download Chad’s full report →
-          </a>
+        <div class="contrast-grid">
+          <div class="contrast-card">
+            <div class="contrast-card-inner">
+              <img
+                src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/landing-page-05-26/hirable-candidate.png?v=2"
+                alt="TeamSyncAI candidate evaluation showing STRONG HIRE recommendation with trust score 8.5 and performance score 8.5"
+                loading="lazy"
+              />
+              <div class="contrast-card-fade"></div>
+              <a
+                href="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/landing-page-05-26/detailed-report-jordan-selfstarter-e9918a.pdf"
+                target="_blank"
+                class="contrast-card-download"
+                onclick="if(typeof gtag==='function'){gtag('event','file_download',{file_name:'detailed-report-jordan-selfstarter-e9918a.pdf',link_text:'Download Jordan report',location:'contrast_card'});}"
+              >
+                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                Download Jordan's full report
+              </a>
+            </div>
+          </div>
+          <div class="contrast-card">
+            <div class="contrast-card-inner">
+              <img
+                src="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/landing-page-05-26/toxic-candidate.png?v=2"
+                alt="TeamSyncAI candidate evaluation showing NO HIRE recommendation with trust score 2.0 and five high-severity red flags"
+                loading="lazy"
+              />
+              <div class="contrast-card-fade"></div>
+              <a
+                href="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/landing-page-05-26/detailed-report-chad-toxic-14c1f5.pdf"
+                target="_blank"
+                class="contrast-card-download"
+                onclick="if(typeof gtag==='function'){gtag('event','file_download',{file_name:'detailed-report-chad-toxic-14c1f5.pdf',link_text:'Download Chad report',location:'contrast_card'});}"
+              >
+                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                Download Chad's full report
+              </a>
+            </div>
+          </div>
         </div>
+       
       </section>
 
       <section class="sample-section">
         <div class="sample-inner">
           <div class="sample-left">
-            <div class="section-label">Real example</div>
+            <div class="section-label">Real Hiring Blueprint</div>
             <div class="sample-what">
-              <div class="sample-what-label">What the Blueprint Generates</div>
+              <div class="sample-what-label">What's Inside Your Hiring Blueprint</div>
               <div class="sample-what-items">
-                <span>Role success definition</span>
-                <span>Success &amp; failure signals</span>
-                <span>Structured interview questions</span>
-                <span>Evaluation rubric</span>
-                <span>30/60/90-day performance indicators</span>
+                <span>Who succeeds in this role — and why</span>
+                <span>Red flags to watch for, named explicitly</span>
+                <span>Structured interview questions for this role</span>
+                <span>Weighted scoring rubric</span>
+                <span>30/60/90-day performance check-ins</span>
               </div>
             </div>
             <div class="sample-prompt">
-              <span>Input used for this example</span>
+              <span>Two lines in. That's all it took.</span>
               “Looking for an Operations Manager, 3-5 years experience, small professional services firm. Need someone who can own vendor relationships and keep projects on track without me being involved.”
             </div>
             <p class="sample-judge">Here’s a real Blueprint from the two-line description above.</p>
-            <a href="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/hiring-guide-26-03/sample-hiring-guide.pdf" target="_blank" class="btn-sample" onclick="if(typeof gtag==='function'){gtag('event','file_download',{file_name:'sample-hiring-guide.pdf',link_text:'Free download - see the full example',location:'sample_section'});}">
+            <a href="https://teamsyncai-assets.tor1.cdn.digitaloceanspaces.com/hiring-guide-26-03/sample-hiring-guide.pdf" target="_blank" class="btn-sample" onclick="if(typeof gtag==='function'){gtag('event','file_download',{file_name:'sample-hiring-guide.pdf',link_text:'Download the full Hiring Blueprint',location:'sample_section'});}">
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-              Free download — see the full example →
+              Free download — see the full Hiring Blueprint →
             </a>
             <div style="margin: 24px 0; display: flex; align-items: center; gap: 12px;">
               <div style="flex: 1; height: 1px; background: var(--border);"></div>
