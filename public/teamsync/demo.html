@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script type="text/javascript">
+    <script type="text/javascript" async>
       (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y)})(window,document,"clarity","script","x3vdr4517o");
     </script>
     <script>
@@ -205,12 +205,58 @@
       }
       .nav-badge {
         font-size: 0.75rem;
-        font-weight: 500;
+        font-weight: 600;
         color: var(--accent);
         background: var(--accent-lt);
         border: 1px solid rgba(26, 107, 74, 0.2);
-        padding: 5px 14px;
+        padding: 7px 18px;
         border-radius: 100px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background 0.2s, box-shadow 0.2s;
+        display: inline-block;
+      }
+      .nav-badge:hover {
+        background: #d4eddf;
+        box-shadow: 0 2px 10px rgba(26, 107, 74, 0.18);
+      }
+      /* STICKY MOBILE CTA */
+      .sticky-cta {
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 900;
+        padding: 12px 16px;
+        background: var(--white);
+        border-top: 1px solid var(--border);
+        box-shadow: 0 -4px 20px rgba(13, 15, 18, 0.1);
+      }
+      @media (max-width: 768px) {
+        .sticky-cta { display: block; }
+      }
+      .sticky-cta-btn {
+        display: block;
+        width: 100%;
+        padding: 14px;
+        background: var(--accent);
+        color: white;
+        border: none;
+        border-radius: var(--radius);
+        font-family: "DM Sans", sans-serif;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        text-align: center;
+        transition: background 0.2s;
+      }
+      .sticky-cta-btn:hover { background: #155c3e; }
+      .sticky-cta-sub {
+        text-align: center;
+        font-size: 0.72rem;
+        color: var(--ink-muted);
+        margin-top: 5px;
       }
 
       /* HERO */
@@ -1204,7 +1250,7 @@
             alt="TeamSyncAI"
           />
         </a>
-        <span class="nav-badge">Free — No credit card</span>
+        <a href="#form-section" class="nav-badge" onclick="event.preventDefault();document.getElementById('form-section').scrollIntoView({behavior:'smooth',block:'start'});">Start Free →</a>
       </nav>
 
       <!-- HERO -->
@@ -2315,6 +2361,21 @@
         if (!c) cookieBanner.classList.add("show");
         else if (c === "accepted") loadGoogleAnalytics();
       });
+    </script>
+    <div class="sticky-cta" id="sticky-cta">
+      <button class="sticky-cta-btn" onclick="document.getElementById('form-section').scrollIntoView({behavior:'smooth',block:'start'});document.getElementById('sticky-cta').style.display='none';">Start Your First Interview — Free →</button>
+      <div class="sticky-cta-sub">No credit card · Takes 5 minutes</div>
+    </div>
+    <script>
+      (function() {
+        var stickyCta = document.getElementById('sticky-cta');
+        var formSection = document.getElementById('form-section');
+        if (!stickyCta || !formSection || !window.IntersectionObserver) return;
+        var obs = new IntersectionObserver(function(entries) {
+          stickyCta.style.display = entries[0].isIntersecting ? 'none' : '';
+        }, { rootMargin: '0px' });
+        obs.observe(formSection);
+      })();
     </script>
     <script defer src="/_vercel/insights/script.js"></script>
   </body>
